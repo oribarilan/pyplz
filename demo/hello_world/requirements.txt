@@ -1,0 +1,1 @@
+plz @ file:../../../plz  # Relative path from the demo project to the plz project
