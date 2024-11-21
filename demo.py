@@ -1,8 +1,9 @@
 from plz import Plz
 
-app = Plz()
+plz = Plz()
 
-@app.task("hello")
+
+@plz.task("hello")
 def hello():
     """Print 'hello world'."""
     print("hello world")
