@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import os
+import re
 from typing import Callable
 
 import typer
@@ -28,16 +29,20 @@ class Plz:
             if ctx.invoked_subcommand is None:
                 self._default_task()
 
-    def task(self, name: str | None = None, default: bool = False) -> Callable:
+    def task(self, name: str | None = None, default: bool = False, requires: list[Callable] | None = None) -> Callable:
         """A decorator to register tasks."""
 
         def wrapper(func: Callable):
             task_name = name or func.__name__
             task_doc = inspect.cleandoc(func.__doc__) if func.__doc__ else ""
-            # task_doc = func.__doc__ or ""
-            # task_doc = task_doc.replace("\n", " ").replace("\t", " ")
-            _app.command(name=task_name, help=task_doc)(func)  # Register the task as a Typer command
-            # _app.command(name=task_name)(func)  # Register the task as a Typer command
+
+            def func_with_requires():
+                if requires:
+                    for r in requires:
+                        r()
+                return func()
+
+            _app.command(name=task_name, help=task_doc)(func_with_requires)  # Register the task as a Typer command
             if default:
                 self._default_task = func
             return func
