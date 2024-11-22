@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from ast import Call
 import importlib.util
 import os
-import re
-from typing import Callable
+from typing import Any, Callable, Tuple
 
 import typer
 from rich import box
@@ -29,8 +29,29 @@ class Plz:
             if ctx.invoked_subcommand is None:
                 self._default_task()
 
-    def task(self, name: str | None = None, default: bool = False, requires: list[Callable] | None = None) -> Callable:
+    def task(
+        self,
+        name: str | None = None,
+        default: bool = False,
+        requires: list[Callable | Tuple[Callable, Tuple[Any, ...]]] | None = None,
+    ) -> Callable:
         """A decorator to register tasks."""
+
+        require_func_with_args_collection: list[Callable[[], None]] = []
+        if requires:
+            if not isinstance(requires, list):
+                requires = [requires]
+
+            for r in requires:
+                if not isinstance(r, tuple):
+                    require_func_with_args = r
+                else:
+                    func_to_call, arguments = r
+
+                    def require_func_with_args():
+                        func_to_call(*arguments)
+
+                require_func_with_args_collection.append(require_func_with_args)
 
         def wrapper(func: Callable):
             task_name = name or func.__name__
@@ -38,7 +59,7 @@ class Plz:
 
             def func_with_requires():
                 if requires:
-                    for r in requires:
+                    for r in require_func_with_args_collection:
                         r()
                 return func()
 

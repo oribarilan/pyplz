@@ -19,7 +19,7 @@
 [ ] `plz .create-demo`
 [ ] async commands
 [ ] `plz.progress`
-[ ] dependencies - list
+[x] dependencies - list
 [ ] dependencies - list or single
 [ ] dependencies - list or single, with arguments
 [ ] 
