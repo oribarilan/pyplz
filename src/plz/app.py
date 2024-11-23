@@ -18,7 +18,7 @@ def main():
         sys.exit(1)
 
     spec = importlib.util.spec_from_file_location("plzfile", plzfile_path)
-    plzfile = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(plzfile)
+    plzfile = importlib.util.module_from_spec(spec)  # type: ignore
+    spec.loader.exec_module(plzfile)  # type: ignore
 
     plz.run_task(task_name, *args)
