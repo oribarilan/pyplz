@@ -17,7 +17,6 @@ console = Console()
 class Plz:
     def __init__(self) -> None:
         self._tasks: dict[str, Task] = dict()
-        self._add_builtin(name="list", desc="List all available tasks.", func=self.list_tasks, default=True)
 
     def _add_builtin(self, name: str, desc: str, func: Callable, default: bool = False) -> None:
         task = Task(func=func, name=name, desc=desc, is_builtin=True, is_default=default)
@@ -66,12 +65,26 @@ class Plz:
         console.print(panel)
 
     def run_task(self, task_name: str | None, *args):
+        arg_lst = list(args)
+
+        # handle list
+        if task_name is not None and (task_name == "-l" or task_name == "--list"):
+            self.list_tasks()
+            return
+
         # default
         if task_name is None:
             default_tasks = [t for t in self._tasks.values() if t.is_default]
+
             if len(default_tasks) > 1:
                 self.write_error("More than one default task found: " + ", ".join(t.name for t in default_tasks))
                 return
+
+            if len(default_tasks) == 0:
+                # default behavior is to list tasks
+                self.list_tasks()
+                return
+
             default_task = default_tasks[0]
             default_task()
             return
@@ -79,8 +92,8 @@ class Plz:
         # specified
         if task_name in self._tasks:
             task = self._tasks[task_name]
-            arg_lst = list(args)
-            # Check for '-h' or '--help' in args
+
+            # handle help
             if "-h" in arg_lst or "--help" in arg_lst:
                 task.print_doc()
                 return

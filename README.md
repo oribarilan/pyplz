@@ -28,19 +28,17 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 
 ## Features
 
-[ ] List with plz -l (and default)
+[x] List with plz -l (and default)
 [x] Default
 [x] Help flags (-h and --help)
-[x] dependencies - list or single
-[ ] plz help (general help that is configurable)
+[x] dependencies - single, list, with or without args
 
 ### Backlog Should
+[ ] move to toml based setup
 [ ] arguments (support from command line and in docs)
-[ ] dependencies - list or single, with arguments
+[ ] tests
 [ ] env variables and .env file
 [ ] doc pages
-[ ] tests
-[ ] move to toml based setup
 
 ### Could
 [ ] order commands
@@ -48,3 +46,5 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 [ ] async commands
 [ ] `plz.progress`
 [ ] support options for commands
+[ ] use argparse lib
+[ ] "Did you mean?" offer another command if something resembles it.
