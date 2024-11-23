@@ -16,10 +16,17 @@
 
 ## Backlog
 
+### Should
+[ ] dependencies - list
+[ ] dependencies - list or single
+[ ] dependencies - list or single, with arguments
+[ ] env variables and .env file
+[ ] doc pages
+[ ] tests
+[ ] move to toml based setup
+
+### Could
+[ ] order commands
 [ ] `plz .create-demo`
 [ ] async commands
 [ ] `plz.progress`
-[x] dependencies - list
-[ ] dependencies - list or single
-[ ] dependencies - list or single, with arguments
-[ ] 
