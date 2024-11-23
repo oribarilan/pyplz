@@ -15,6 +15,11 @@ def drink_coffee(type: Coffee = Coffee.ESPRESSO):
     plz.print(f"Drinking {type.value}")
 
 
+@plz.task()
+def say(s: str):
+    print(s)
+
+
 # @plz.task(requires=[(drink_coffee, (Coffee.DOUBLE_ESPRESSO,))])
 # def check_emails():
 #     """Check emails"""

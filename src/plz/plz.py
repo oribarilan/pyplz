@@ -77,6 +77,12 @@ class Plz:
         # specified
         if task_name in self._tasks:
             task = self._tasks[task_name]
+            arg_lst = list(args)
+            # Check for '-h' or '--help' in args
+            if "-h" in arg_lst or "--help" in arg_lst:
+                task.print_doc()
+                return
+
             task(*args)
             return
 
