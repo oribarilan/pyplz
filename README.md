@@ -28,15 +28,14 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 
 ## Features
 
-[x] List
+[ ] List with plz -l (and default)
 [x] Default
 [x] Help flags (-h and --help)
-[ ] plz help
+[x] dependencies - list or single
+[ ] plz help (general help that is configurable)
 
 ### Backlog Should
 [ ] arguments (support from command line and in docs)
-[ ] dependencies - list
-[ ] dependencies - list or single
 [ ] dependencies - list or single, with arguments
 [ ] env variables and .env file
 [ ] doc pages

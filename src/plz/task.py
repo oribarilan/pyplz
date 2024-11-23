@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Callable
 import inspect
-from rich.console import Console
+from typing import Any, Callable
+
 from rich import box
+from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+
 
 console = Console()
 
@@ -16,7 +18,7 @@ class Task:
         func: Callable,
         name: str | None = None,
         desc: str | None = None,
-        requires: list[tuple[Task, tuple[Any, ...]]] | None = None,
+        requires: list[tuple[Task, tuple]] | None = None,  # List of tuples of tasks and their arguments
         is_default: bool = False,
         is_builtin: bool = False,
     ) -> None:
@@ -26,18 +28,25 @@ class Task:
         if len(desc) == 0 and func.__doc__ is not None:
             desc = inspect.cleandoc(func.__doc__)
         self.desc = desc
-        self.requires = requires or []
         self.is_default = is_default
         self.is_builtin = is_builtin
+
+        # normalize requires
+        if requires is None:
+            requires = []
+        self.requires = requires
 
     def __call__(self, *args) -> Any:
         """
         Call the task function and return the result.
         If the task function has any required functions, they will be called first (recursively).
         #"""
-        sig = inspect.signature(self.func)
+        # Invoke required tasks first
+        for r_task, r_args in self.requires:
+            r_task(*r_args)
 
         # Get the required positional arguments
+        sig = inspect.signature(self.func)
         params = [
             param
             for param in sig.parameters.values()
@@ -45,21 +54,16 @@ class Task:
             and param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
         ]
 
+        # Check for missing arguments
         if len(args) < len(params):
             missing_params = params[len(args) :]
             missing = ", ".join(p.name for p in missing_params)
             console.print(f"[red]Missing arguments for task '{self.name}': {missing}[/]")
             return
-        # required = self.requires or []
-        # for r in required:
-        #     func, r_args = r
-        #     ret = func(*r_args)
-        #     if ret is not None:
-        #         console.log(ret)
 
-        # ret = self.func(*args)
-        # if ret is not None:
-        #     console.log(ret)
+        ret = self.func(*args)
+        if ret is not None:
+            console.log(ret)
 
     def __str__(self) -> str:
         tags = f"{'[default]' if self.is_default else ''}{'[builtin]' if self.is_builtin else ''}"
@@ -83,11 +87,16 @@ class Task:
                 default_value = f" = {param.default!r}"
                 params.append(f"[cyan]{param.name}{param_type}{default_value}[/cyan] [grey70](optional)[/grey70]")
 
+        # Build dependencies list
+        dependencies = [r_task.name for r_task, r_args in self.requires]
+
         # Get the docstring
         docstring = self.desc or "No description provided."
 
         # Create a table to display the information
         table = Table(show_header=False, box=None)
+        if dependencies:
+            table.add_row("[bold]Depends on[/bold]", ", ".join(dependencies))
         table.add_row("[bold]Parameters[/bold]", ", ".join(params))
         table.add_row("[bold]Description[/bold]", docstring.strip())
 

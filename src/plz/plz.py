@@ -1,13 +1,15 @@
-# plz/manager.py
 from __future__ import annotations
 
 import inspect
 from typing import Callable
-from plz.task import Task
-from rich.console import Console
+
 from rich import box
+from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+
+from plz.task import Task
+from plz.types import CallableWithArgs
 
 console = Console()
 
@@ -15,13 +17,13 @@ console = Console()
 class Plz:
     def __init__(self) -> None:
         self._tasks: dict[str, Task] = dict()
-        self._add_builtin(name="list", desc="List all available tasks.", func=self.list, default=True)
+        self._add_builtin(name="list", desc="List all available tasks.", func=self.list_tasks, default=True)
 
     def _add_builtin(self, name: str, desc: str, func: Callable, default: bool = False) -> None:
         task = Task(func=func, name=name, desc=desc, is_builtin=True, is_default=default)
         self._tasks[task.name] = task
 
-    def list(self):
+    def list_tasks(self):
         """List all available tasks."""
         if all(t.is_builtin for t in self._tasks.values()):
             self.write_error("No tasks have been registered. plz expects at least one `@plz.task` in your plzfile.py")
@@ -94,20 +96,37 @@ class Plz:
         name: str | None = None,
         desc: str | None = None,
         default: bool = False,
-        # requires=None, is_default=False, is_builtin=False
-    ):
-        def decorator(func):
+        requires: Callable | list[Callable | CallableWithArgs] | None = None,
+    ) -> Callable:
+        def decorator(func) -> Callable:
             t_name = name
             if name is None:
                 t_name = func.__name__
+
             t_desc = desc
             if desc is None:
                 t_desc = inspect.cleandoc(func.__doc__) if func.__doc__ else ""
-            self._tasks[func.__name__] = Task(func=func, name=t_name, desc=t_desc, is_default=default)
+
+            # Nomralize requires to list of tuples
+            _required = requires
+            required_funcs: list[CallableWithArgs]
+            if _required is None:
+                required_funcs = []
+            elif isinstance(_required, list):
+                # Normalize callable with args to tuple as well
+                required_funcs = [r if isinstance(r, tuple) else (r, ()) for r in _required]
+            else:
+                required_funcs = [(_required, ())]
+            required_tasks = [(self._tasks[r.__name__], args) for r, args in required_funcs]
+
+            self._tasks[func.__name__] = Task(
+                func=func, name=t_name, desc=t_desc, is_default=default, requires=required_tasks
+            )
             if default:
                 # set all builtins to not be default
                 for t in (t for t in self._tasks.values() if t.is_builtin):
                     t.is_default = False
+
             return func
 
         return decorator

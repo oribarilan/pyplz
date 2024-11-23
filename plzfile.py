@@ -16,9 +16,18 @@ def drink_coffee(type: Coffee = Coffee.ESPRESSO):
 
 
 @plz.task()
-def say(s: str):
-    print(s)
+def a(num: int = 1):
+    plz.print(f"a + {num}")
 
+
+@plz.task(requires=[(a, (2,))])
+def b(num: int = 2):
+    plz.print(f"b + {num}")
+
+
+@plz.task(requires=[(a, (3,)), (b, (4,))])
+def c(num: int):
+    plz.print(f"c + {num}")
 
 # @plz.task(requires=[(drink_coffee, (Coffee.DOUBLE_ESPRESSO,))])
 # def check_emails():
