@@ -10,6 +10,12 @@ class Coffee(Enum):
 
 
 @plz.task()
+def echo(msg: str):
+    """Echo message"""
+    plz.run("echo this")
+
+
+@plz.task()
 def drink_coffee(type: Coffee = Coffee.ESPRESSO):
     """Brew coffee"""
     plz.print(f"Drinking {type.value}")

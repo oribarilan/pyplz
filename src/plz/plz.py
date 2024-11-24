@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import subprocess
 from typing import Callable
 
 from rich import box
@@ -25,7 +26,7 @@ class Plz:
     def list_tasks(self):
         """List all available tasks."""
         if all(t.is_builtin for t in self._tasks.values()):
-            self.write_error("No tasks have been registered. plz expects at least one `@plz.task` in your plzfile.py")
+            self.print_error("No tasks have been registered. plz expects at least one `@plz.task` in your plzfile.py")
             return
 
         max_command_length = max(len(t.name) + 5 for t in self._tasks.values())
@@ -82,7 +83,7 @@ class Plz:
             default_tasks = [t for t in self._tasks.values() if t.is_default]
 
             if len(default_tasks) > 1:
-                self.write_error("More than one default task found: " + ", ".join(t.name for t in default_tasks))
+                self.print_error("More than one default task found: " + ", ".join(t.name for t in default_tasks))
                 return
 
             if len(default_tasks) == 0:
@@ -107,7 +108,7 @@ class Plz:
             return
 
         # not found
-        self.write_error(f"Task '{task_name}' not found.")
+        self.print_error(f"Task '{task_name}' not found.")
 
     def task(
         self,
@@ -149,13 +150,18 @@ class Plz:
 
         return decorator
 
-    def write_error(self, msg):
-        console.print(f"[red]{msg}[/]")
+    def print_error(self, msg: str):
+        self.print(msg, "red")
 
-    def write_warning(self, msg):
-        console.print(f"[yellow]{msg}[/]")
+    def print_warning(self, msg: str):
+        self.print(msg, "yellow")
 
-    def print(self, msg):
+    def print_weak(self, msg: str):
+        self.print(msg, "bright_black")
+
+    def print(self, msg: str, color: str | None = None):
+        if color:
+            msg = f"[{color}]{msg}[/]"
         console.print(msg)
 
     def _print_help(self):
@@ -166,6 +172,34 @@ class Plz:
         console.print("  -l, --list    List all available tasks")
         console.print("\nAvailable tasks:")
         self.list_tasks()
+
+    def run(
+        self,
+        command: str,
+        env: dict[str, str] | None = None,
+        timeout_secs: int | None = None,
+        dry_run: bool = False,
+        echo: bool = True,
+    ):
+        """Run a terminal command."""
+        if echo:
+            self.print_weak(f"Running command: `{command}`")
+
+        if dry_run:
+            self.print_warning(f"Dry run: {command}")
+            return
+
+        try:
+            result = subprocess.run(
+                command, shell=True, check=True, text=True, capture_output=True, env=env, timeout=timeout_secs
+            )
+            console.print(result.stdout)
+            if result.stderr:
+                self.print_error(result.stderr)
+        except subprocess.CalledProcessError as e:
+            self.print_error(f"Command '{command}' failed with error: {e}")
+        except subprocess.TimeoutExpired as e:
+            self.print_error(f"Command '{command}' timed out after {timeout_secs} seconds, {e}")
 
 
 plz = Plz()

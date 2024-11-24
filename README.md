@@ -20,11 +20,13 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 ### Installation
 
 1. Python 3.9
-2. `python -m venv .venv`
-3. `source .venv/bin/activate`
-4. `pip install --upgrade pip`
-5. `pip install -r requirements.dev.txt`
-7. in the root dir: `pip install -e .`
+2. Create a virtual environment: `python -m venv .venv`
+3. Activate the virtual environment:
+   - On macOS and Linux: `source .venv/bin/activate`
+   - On Windows: `.venv\Scripts\activate`
+4. Upgrade pip: `pip install --upgrade pip`
+5. Install dependencies: `pip install -r requirements.dev.txt`
+6. In the root directory: `pip install -e .`
 
 ## Features
 
@@ -33,7 +35,7 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 [x] Help flags (-h and --help)
 [x] dependencies - single, list, with or without args
 [x] plz -h
-[ ] running commands
+[x] running commands
 
 ### Backlog Should
 [x] move to toml based setup
