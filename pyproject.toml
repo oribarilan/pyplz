@@ -10,3 +10,27 @@ line-length = 120
 
 [tool.mypy]
 disable_error_code = "import-untyped"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "plz"
+version = "0.1"
+description = "A Python-first command runner"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "rich>=13.9.4,<14",
+]
+
+[project.urls]
+homepage = "https://example.com"
+repository = "https://github.com/yourusername/plz"
+
+[project.scripts]
+plz = "plz.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

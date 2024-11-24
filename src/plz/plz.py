@@ -35,7 +35,7 @@ class Plz:
         max_desc_length = min(max_desc_length, 50)
 
         table = Table(show_header=False, box=None, show_edge=False)
-        table.add_column("Commands", style="cyan", no_wrap=True, width=max_command_length + 2)
+        table.add_column("Tasks", style="orange1", no_wrap=True, width=max_command_length + 2)
         table.add_column("Description", style="white", no_wrap=True, width=max_desc_length + 2)
 
         for t in self._tasks.values():
@@ -55,9 +55,9 @@ class Plz:
 
         panel = Panel(
             table,
-            title="Commands",
+            title="Tasks",
             title_align="left",
-            border_style="cyan",
+            border_style="dark_orange3",
             padding=(0, 1),
             box=box.ROUNDED,
             width=final_width,
@@ -70,6 +70,11 @@ class Plz:
         # handle list
         if task_name is not None and (task_name == "-l" or task_name == "--list"):
             self.list_tasks()
+            return
+
+        # handle help
+        if task_name is not None and (task_name == "-h" or task_name == "--help"):
+            self._print_help()
             return
 
         # default
@@ -152,6 +157,15 @@ class Plz:
 
     def print(self, msg):
         console.print(msg)
+
+    def _print_help(self):
+        """Print the general help message."""
+        console.print(r"Usage: [orange1]plz \[task] \[args][/]")
+        console.print("\nAvailable flags:")
+        console.print("  -h, --help    Show help for a specific task (or for plz if no task is provided)")
+        console.print("  -l, --list    List all available tasks")
+        console.print("\nAvailable tasks:")
+        self.list_tasks()
 
 
 plz = Plz()

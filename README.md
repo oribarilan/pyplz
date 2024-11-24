@@ -23,8 +23,8 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 2. `python -m venv .venv`
 3. `source .venv/bin/activate`
 4. `pip install --upgrade pip`
-5. `pip install -r requirements.txt -r requirements.dev.txt`
-6. in the root dir: `pip install -e .`
+5. `pip install -r requirements.dev.txt`
+7. in the root dir: `pip install -e .`
 
 ## Features
 
@@ -32,10 +32,12 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 [x] Default
 [x] Help flags (-h and --help)
 [x] dependencies - single, list, with or without args
+[x] plz -h
+[ ] running commands
 
 ### Backlog Should
-[ ] move to toml based setup
-[ ] arguments (support from command line and in docs)
+[x] move to toml based setup
+[x] arguments (support from command line and in docs)
 [ ] tests
 [ ] env variables and .env file
 [ ] doc pages
