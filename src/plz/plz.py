@@ -180,26 +180,46 @@ class Plz:
         timeout_secs: int | None = None,
         dry_run: bool = False,
         echo: bool = True,
-    ):
-        """Run a terminal command."""
+        print: bool = True,
+    ) -> str | None:
+        """
+        Executes a shell command with optional environment variables, timeout, and dry run mode.
+        Args:
+            command (str): The shell command to execute.
+            env (dict[str, str], optional): A dictionary of environment variables to set for the command. Defaults to None.
+            timeout_secs (int, optional): The maximum number of seconds to allow the command to run. Defaults to None.
+            dry_run (bool): If True, the command will not be executed, and a dry run message will be printed. Defaults to False.
+            echo (bool): If True, the command will be printed before execution. Defaults to True.
+            print (bool): If True, the standard output of the command will be printed. Defaults to True.
+        Returns:
+            The standard output of the command, or None if the command failed.
+        Raises:
+            subprocess.CalledProcessError: If the command returns a non-zero exit status.
+            subprocess.TimeoutExpired: If the command times out.
+        """
         if echo:
             self.print_weak(f"Running command: `{command}`")
 
         if dry_run:
             self.print_warning(f"Dry run: {command}")
-            return
+            return None
 
         try:
             result = subprocess.run(
                 command, shell=True, check=True, text=True, capture_output=True, env=env, timeout=timeout_secs
             )
-            console.print(result.stdout)
+            if print and result.stdout:
+                self.print(result.stdout)
             if result.stderr:
                 self.print_error(result.stderr)
+                return None
+            return result.stdout
         except subprocess.CalledProcessError as e:
             self.print_error(f"Command '{command}' failed with error: {e}")
         except subprocess.TimeoutExpired as e:
             self.print_error(f"Command '{command}' timed out after {timeout_secs} seconds, {e}")
+
+        return None
 
 
 plz = Plz()
