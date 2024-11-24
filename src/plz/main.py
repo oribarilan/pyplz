@@ -2,7 +2,7 @@ import importlib.util
 import os
 import sys
 
-from plz.plz import plz
+from plz.plz_app import plz
 
 
 def main():
@@ -21,4 +21,4 @@ def main():
     plzfile = importlib.util.module_from_spec(spec)  # type: ignore
     spec.loader.exec_module(plzfile)  # type: ignore
 
-    plz.run_task(task_name, *args)
+    plz._run_task(task_name, *args)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import subprocess
+import sys
 from typing import Callable
 
 from rich import box
@@ -15,7 +16,7 @@ from plz.types import CallableWithArgs
 console = Console()
 
 
-class Plz:
+class PlzApp:
     def __init__(self) -> None:
         self._tasks: dict[str, Task] = dict()
 
@@ -65,7 +66,7 @@ class Plz:
         )
         console.print(panel)
 
-    def run_task(self, task_name: str | None, *args):
+    def _run_task(self, task_name: str | None, *args):
         arg_lst = list(args)
 
         # handle list
@@ -84,7 +85,7 @@ class Plz:
 
             if len(default_tasks) > 1:
                 self.print_error("More than one default task found: " + ", ".join(t.name for t in default_tasks))
-                return
+                sys.exit(1)
 
             if len(default_tasks) == 0:
                 # default behavior is to list tasks
@@ -186,9 +187,11 @@ class Plz:
         Executes a shell command with optional environment variables, timeout, and dry run mode.
         Args:
             command (str): The shell command to execute.
-            env (dict[str, str], optional): A dictionary of environment variables to set for the command. Defaults to None.
+            env (dict[str, str], optional): A dictionary of environment variables to set for the command.
+                Defaults to None.
             timeout_secs (int, optional): The maximum number of seconds to allow the command to run. Defaults to None.
-            dry_run (bool): If True, the command will not be executed, and a dry run message will be printed. Defaults to False.
+            dry_run (bool): If True, the command will not be executed, and a dry run message will be printed.
+                Defaults to False.
             echo (bool): If True, the command will be printed before execution. Defaults to True.
             print (bool): If True, the standard output of the command will be printed. Defaults to True.
         Returns:
@@ -222,4 +225,4 @@ class Plz:
         return None
 
 
-plz = Plz()
+plz = PlzApp()

@@ -40,7 +40,15 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 ### Backlog Should
 [x] move to toml based setup
 [x] arguments (support from command line and in docs)
-[ ] tests
+[x] test Task
+[x] test run_task
+[x] test main help
+[x] test task help
+[x] test dependencies
+[ ] test coverage
+[ ] CI with test
+[ ] CI with test coverage
+[ ] CD
 [ ] env variables and .env file
 [ ] doc pages
 

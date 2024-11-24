@@ -64,7 +64,7 @@ class Task:
 
         ret = self.func(*args)
         if ret is not None:
-            console.log(ret)
+            console.print(ret)
 
     def __str__(self) -> str:
         tags = f"{'[default]' if self.is_default else ''}{'[builtin]' if self.is_builtin else ''}"

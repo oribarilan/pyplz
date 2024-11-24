@@ -1,5 +1,6 @@
 from enum import Enum
-from plz.plz import plz
+
+from plz import plz
 
 
 class Coffee(Enum):
