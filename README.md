@@ -36,6 +36,10 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 [x] dependencies - single, list, with or without args
 [x] plz -h
 [x] running commands
+[ ] environment variables
+    [x] .env file
+    [ ] command scope env variables
+    [ ] ad-hoc env variables
 
 ### Backlog Should
 [x] move to toml based setup
@@ -49,8 +53,9 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 [ ] CI with test
 [ ] CI with test coverage
 [ ] CD
-[ ] env variables and .env file
 [ ] doc pages
+[ ] load specific file
+[ ] heirachial loading
 
 ### Could
 [ ] order commands

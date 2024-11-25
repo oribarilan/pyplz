@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 import inspect
+import os
+from pathlib import Path
 import subprocess
 import sys
 from typing import Callable
 
+from dotenv import dotenv_values, load_dotenv
 from rich import box
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from plz.console_utils import ConsoleUtils
 from plz.task import Task
 from plz.types import CallableWithArgs
 
@@ -19,6 +23,7 @@ console = Console()
 class PlzApp:
     def __init__(self) -> None:
         self._tasks: dict[str, Task] = dict()
+        self._dotenv = self._load_environment_variables()
 
     def _add_builtin(self, name: str, desc: str, func: Callable, default: bool = False) -> None:
         task = Task(func=func, name=name, desc=desc, is_builtin=True, is_default=default)
@@ -66,6 +71,21 @@ class PlzApp:
         )
         console.print(panel)
 
+    def _load_environment_variables(self) -> list[list[str]]:
+        # Determine the path to the .env file
+        env_path = Path(os.getcwd()) / ".env"
+
+        # Load the .env file if it exists
+        if env_path.exists():
+            # capture the env variables
+            load_dotenv(env_path)
+            # Load the environment variables into a variable
+            env_vars_dict = dotenv_values(env_path)
+            env_vars_list = [[k, v] for k, v in env_vars_dict.items() if v is not None]
+            return env_vars_list
+
+        return []
+
     def _run_task(self, task_name: str | None, *args):
         arg_lst = list(args)
 
@@ -77,6 +97,15 @@ class PlzApp:
         # handle help
         if task_name is not None and (task_name == "-h" or task_name == "--help"):
             self._print_help()
+            return
+
+        # envs
+        if task_name is not None and (task_name == "--list-env"):
+            self._print_env()
+            return
+
+        if task_name is not None and (task_name == "--list-env-all"):
+            self._print_env(all=True)
             return
 
         # default
@@ -174,6 +203,17 @@ class PlzApp:
         console.print("\nAvailable tasks:")
         self.list_tasks()
 
+    def _print_env(self, all: bool = False):
+        """
+        prints the environment variable
+        """
+        ConsoleUtils.print_box(title=".env", rows=self._dotenv, sort=True)
+        if all:
+            env_vars = os.environ
+            rows = [[key, value] for key, value in env_vars.items()]
+            rows = [row for row in rows if row not in self._dotenv]
+            ConsoleUtils.print_box(title="All (rest)", rows=rows, sort=True)
+
     def run(
         self,
         command: str,
@@ -206,6 +246,9 @@ class PlzApp:
         if dry_run:
             self.print_warning(f"Dry run: {command}")
             return None
+
+        # Merge provided env with the current environment variables
+        env = {**os.environ, **(env or {})}
 
         try:
             result = subprocess.run(
