@@ -14,10 +14,10 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from plz.command import Command, Parser
-from plz.console_utils import ConsoleUtils
-from plz.task import Task
-from plz.types import CallableWithArgs
+from pyplz.command import Command, Parser
+from pyplz.console_utils import ConsoleUtils
+from pyplz.task import Task
+from pyplz.types import CallableWithArgs
 
 console = Console()
 

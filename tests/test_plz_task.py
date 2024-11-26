@@ -5,7 +5,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from plz import plz
+from pyplz import plz
 
 
 class TestPlzTask:

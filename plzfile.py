@@ -1,6 +1,6 @@
 from enum import Enum
 
-from plz import plz
+from pyplz import plz
 
 
 class Coffee(Enum):

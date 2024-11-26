@@ -1,8 +1,8 @@
 import os
 import sys
 
-from plz.command import Parser
-from plz.plz_app import plz
+from pyplz.command import Parser
+from pyplz.plz_app import plz
 
 
 def main():

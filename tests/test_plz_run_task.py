@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Callable
 
-from plz import plz
+from pyplz import plz
 from tests.test_utils import TestUtils
 
 

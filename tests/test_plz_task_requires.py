@@ -4,7 +4,7 @@ from typing import Callable
 from unittest.mock import Mock, call
 
 
-from plz import plz
+from pyplz import plz
 
 
 class TestPlzTaskRequires:

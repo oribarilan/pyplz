@@ -1,14 +1,14 @@
-site_name: Fliq
+site_name: pyplz
 site_url: https://oribarilan.github.io/plz/
 repo_url: https://github.com/oribarilan/plz
 repo_name: oribarilan/plz
 
 theme:
   name: material
-  favicon: assets/flick_emoji_2_small.png
+  favicon: assets/please.png
   icon:
     repo: fontawesome/brands/github
-  logo: assets/flick_emoji_2_small.png
+  logo: assets/please.png
   features:
     - pymdownx.highlight:
         anchor_linenums: true
@@ -97,22 +97,18 @@ copyright: |
   &copy; 2024 <a href="https://github.com/oribarilan"  target="_blank" rel="noopener">Ori Bar-ilan</a>
 
 nav:
-    - Welcome to Fliq: index.md
+    - Welcome to pyplz: index.md
     - Getting Started: getting_started.md
-    - Examples: examples.md
-    - Reference:
-        - API Intro: reference/api_intro.md
-        - What's New: reference/release_notes.md
-        - Code API:
-          - API Index: reference/code_api/api_index.md
-          - Mapper Methods: reference/code_api/mapper_methods.md
-          - Materializer Methods: reference/code_api/materializer_methods.md
-          - Snapshots: reference/code_api/snapshots.md
-          - Partitioning: reference/code_api/partitioning.md
-          - Peeking: reference/code_api/peeking.md
-        - API Roadmap: reference/api_roadmap.md
-    - Misc:
-        - Performance: misc/performance.md
-#    - Contribution:
-#        - Contribution: contribution/contribution.md
-#        - Development: contribution/development.md
+    # - Reference:
+        # - API Intro: reference/api_intro.md
+        # - What's New: reference/release_notes.md
+        # - Code API:
+          # - API Index: reference/code_api/api_index.md
+          # - Mapper Methods: reference/code_api/mapper_methods.md
+          # - Materializer Methods: reference/code_api/materializer_methods.md
+          # - Snapshots: reference/code_api/snapshots.md
+          # - Partitioning: reference/code_api/partitioning.md
+          # - Peeking: reference/code_api/peeking.md
+    - Backlog: backlog.md
+    - Contribution:
+        - Contribution: contribution/contribution.md
