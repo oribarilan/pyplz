@@ -1,6 +1,5 @@
 from enum import Enum
 
-from pkg_resources import require
 from plz import plz
 
 
