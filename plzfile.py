@@ -1,5 +1,4 @@
 from enum import Enum
-
 from plz import plz
 
 
@@ -35,6 +34,14 @@ def b(num: int = 2):
 @plz.task(requires=[(a, (3,)), (b, (4,))])
 def c(num: int):
     plz.print(f"c + {num}")
+
+
+@plz.task()
+def doc():
+    from scripts import doc_gen
+
+    doc_gen.create_index_doc()
+
 
 # @plz.task(requires=[(drink_coffee, (Coffee.DOUBLE_ESPRESSO,))])
 # def check_emails():

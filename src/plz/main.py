@@ -1,4 +1,3 @@
-import importlib.util
 import os
 import sys
 
@@ -14,10 +13,6 @@ def main():
     if not os.path.isfile(plzfile_path):
         plz.print("No plzfile.py found in the current directory.")
         sys.exit(1)
-
-    spec = importlib.util.spec_from_file_location("plzfile", plzfile_path)
-    plzfile = importlib.util.module_from_spec(spec)  # type: ignore
-    spec.loader.exec_module(plzfile)  # type: ignore
 
     plz._configure(parser=parser)
 

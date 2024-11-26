@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import importlib.util
 import inspect
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from typing import Callable
 
 from dotenv import dotenv_values, load_dotenv
@@ -24,10 +25,16 @@ console = Console()
 class PlzApp:
     def __init__(self) -> None:
         self._tasks: dict[str, Task] = dict()
-        self._dotenv = self._load_environment_variables()
+        self._user_configured = False
 
     def _configure(self, parser: Parser):
         self._parser = parser
+
+    def configure(self):
+        self._user_configured = True
+        self._dotenv = self._load_environment_variables()
+        # plz loads the CWD to the sys.path to allow plzfile to import freely
+        sys.path.append(os.path.join(os.getcwd()))
 
     def _add_builtin(self, name: str, desc: str, func: Callable) -> None:
         task = Task(func=func, name=name, desc=desc, is_builtin=True, is_default=False)
@@ -167,7 +174,18 @@ class PlzApp:
         for k, v in command.env:
             os.environ[k] = v
 
+    def _load_plzfile(self):
+        plzfile_path = os.path.join(os.getcwd(), "plzfile.py")
+        spec = importlib.util.spec_from_file_location("plzfile", plzfile_path)
+        plzfile = importlib.util.module_from_spec(spec)  # type: ignore
+        spec.loader.exec_module(plzfile)  # type: ignore
+
     def _main_execute(self, command: Command):
+        if not self._user_configured:
+            self.configure()
+
+        self._load_plzfile()
+
         self._process_env_vars(command)
 
         if self._try_execute_utility_commands(command):

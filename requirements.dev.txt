@@ -1,2 +1,3 @@
 pip-tools
 pytest
+mkdocs-material~=9.5
