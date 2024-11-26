@@ -259,7 +259,7 @@ class PlzApp:
         prints the environment variable
         """
         ConsoleUtils.print_box(title=".env", rows=self._dotenv, sort=True)
-        ConsoleUtils.print_box(title="CLI", rows=cmd.env, sort=True)
+        ConsoleUtils.print_box(title="in-line", rows=cmd.env, sort=True)
         if all:
             env_vars = os.environ
             rows = [[key, value] for key, value in env_vars.items()]

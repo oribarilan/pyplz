@@ -39,7 +39,7 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 [ ] environment variables
     [x] .env file
     [ ] task definition
-    [x] cli
+    [x] in-line
     [ ] plz scope (in config)
 [ ] verbosity level
     [ ] verbose loading env variables
