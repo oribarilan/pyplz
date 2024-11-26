@@ -284,6 +284,36 @@ class PlzApp:
             rows = [row for row in rows if row not in self._dotenv]
             ConsoleUtils.print_box(title="All (rest)", rows=rows, sort=True)
 
+    def _run_cli_command(
+        self, cli_command: str, print: bool = True, env: dict[str, str] | None = None
+    ) -> tuple[str, int]:
+        try:
+            # Open a subprocess
+            process = subprocess.Popen(
+                cli_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, shell=True
+            )
+            output = ""
+            # Stream the output in real-time
+            if process.stdout is None:
+                return "", 1
+
+            for line in process.stdout:
+                output += line
+                if print:
+                    self.print(line.rstrip())
+
+            # Wait for the process to finish and get the return code
+            return_code = process.wait()
+            if return_code != 0:
+                self.print_error(f"\nCommand failed with exit code {return_code}")
+
+        except Exception as e:
+            return_code = 1
+            output = f"Error running command: {e}"
+            self.print(output)
+
+        return output, return_code
+
     def run(
         self,
         command: str,
@@ -292,7 +322,7 @@ class PlzApp:
         dry_run: bool = False,
         echo: bool = True,
         print: bool = True,
-    ) -> str | None:
+    ) -> tuple[str, int]:
         """
         Executes a shell command with optional environment variables, timeout, and dry run mode.
         Args:
@@ -315,27 +345,20 @@ class PlzApp:
 
         if dry_run:
             self.print_warning(f"Dry run: {command}")
-            return None
+            return ("", 0)
 
         # Merge provided env with the current environment variables
         env = {**os.environ, **(env or {})}
 
         try:
-            result = subprocess.run(
-                command, shell=True, check=True, text=True, capture_output=True, env=env, timeout=timeout_secs
-            )
-            if print and result.stdout:
-                self.print(result.stdout)
-            if result.stderr:
-                self.print_error(result.stderr)
-                return None
-            return result.stdout
+            output_str, exit_code = self._run_cli_command(command, env=env)
+            return output_str, exit_code
         except subprocess.CalledProcessError as e:
             self.print_error(f"Command '{command}' failed with error: {e}")
         except subprocess.TimeoutExpired as e:
             self.print_error(f"Command '{command}' timed out after {timeout_secs} seconds, {e}")
 
-        return None
+        return ("", 1)
 
 
 plz = PlzApp()

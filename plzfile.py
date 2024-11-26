@@ -1,4 +1,6 @@
 from enum import Enum
+
+from pkg_resources import require
 from plz import plz
 
 
@@ -41,6 +43,12 @@ def doc():
     from scripts import doc_gen
 
     doc_gen.create_index_doc()
+    plz.run("mkdocs build")
+
+
+@plz.task(requires=doc)
+def doc_serve():
+    plz.run("mkdocs serve")
 
 
 # @plz.task(requires=[(drink_coffee, (Coffee.DOUBLE_ESPRESSO,))])
