@@ -10,7 +10,7 @@ from plz import plz
 class TestPlzTaskRequires:
     def _run_task(self, func: Callable | None, *args):
         func_name = func.__name__ if func else None
-        plz._run_task(func_name, *args)
+        plz._main_execute(func_name, *args)
 
     # region wrapped functions for pure functionality
 

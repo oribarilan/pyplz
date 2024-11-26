@@ -9,6 +9,9 @@ console = Console()
 class ConsoleUtils:
     @staticmethod
     def print_box(title: str, rows: list[list[str]], sort: bool = False) -> None:
+        if rows is None or len(rows) == 0:
+            return
+
         # assert only 2 columns (only use case for now)
         if any(len(r) != 2 for r in rows):
             raise ValueError("Only supporting 2 columns")

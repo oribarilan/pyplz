@@ -13,6 +13,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
+from plz.command import Command, Parser
 from plz.console_utils import ConsoleUtils
 from plz.task import Task
 from plz.types import CallableWithArgs
@@ -25,8 +26,11 @@ class PlzApp:
         self._tasks: dict[str, Task] = dict()
         self._dotenv = self._load_environment_variables()
 
-    def _add_builtin(self, name: str, desc: str, func: Callable, default: bool = False) -> None:
-        task = Task(func=func, name=name, desc=desc, is_builtin=True, is_default=default)
+    def _configure(self, parser: Parser):
+        self._parser = parser
+
+    def _add_builtin(self, name: str, desc: str, func: Callable) -> None:
+        task = Task(func=func, name=name, desc=desc, is_builtin=True, is_default=False)
         self._tasks[task.name] = task
 
     def list_tasks(self):
@@ -86,59 +90,99 @@ class PlzApp:
 
         return []
 
-    def _run_task(self, task_name: str | None, *args):
-        arg_lst = list(args)
+    def _try_execute_utility_commands(self, command: Command) -> bool:
+        if command.has_task_specified():
+            return False
 
-        # handle list
-        if task_name is not None and (task_name == "-l" or task_name == "--list"):
+        if command.list:
             self.list_tasks()
-            return
+            return True
 
-        # handle help
-        if task_name is not None and (task_name == "-h" or task_name == "--help"):
+        if command.list_env:
+            self._print_env(cmd=command)
+            return True
+
+        if command.list_env_all:
+            self._print_env(cmd=command, all=True)
+            return True
+
+        return False
+
+    def _try_execute_conditional_utility_commands(self, command: Command) -> bool:
+        if command.has_task_specified():
+            return False
+
+        if command.help:
             self._print_help()
+            return True
+
+        return False
+
+    def _get_default_task(self) -> Task | None:
+        default_tasks = [t for t in self._tasks.values() if t.is_default]
+
+        if len(default_tasks) > 1:
+            self.fail("More than one default task found: " + ", ".join(t.name for t in default_tasks))
+
+        if len(default_tasks) == 0:
+            return None
+        return default_tasks[0]
+
+    def _try_execute_default_task(self, command: Command) -> bool:
+        if command.has_task_specified():
+            return False
+
+        if not command.is_default():
+            return False
+
+        default_task = self._get_default_task()
+        if default_task is None:
+            self.list_tasks()
+            return True
+
+        return False
+
+    def _try_execute_task(self, command: Command) -> bool:
+        if not command.has_task_specified():
+            return False
+
+        if command.task not in self._tasks:
+            self.fail(f"Task '{command.task}' not found.")
+            return False
+
+        task = self._tasks[command.task]
+
+        if command.help:
+            task.print_doc()
+            return True
+
+        if command.list_env:
+            self._print_env(cmd=command)
+            return True
+
+        task(*command.args)
+        return True
+
+    def _process_env_vars(self, command: Command):
+        for k, v in command.env:
+            os.environ[k] = v
+
+    def _main_execute(self, command: Command):
+        self._process_env_vars(command)
+
+        if self._try_execute_utility_commands(command):
             return
 
-        # envs
-        if task_name is not None and (task_name == "--list-env"):
-            self._print_env()
+        if self._try_execute_conditional_utility_commands(command):
             return
 
-        if task_name is not None and (task_name == "--list-env-all"):
-            self._print_env(all=True)
+        if self._try_execute_default_task(command):
             return
 
-        # default
-        if task_name is None:
-            default_tasks = [t for t in self._tasks.values() if t.is_default]
-
-            if len(default_tasks) > 1:
-                self.print_error("More than one default task found: " + ", ".join(t.name for t in default_tasks))
-                sys.exit(1)
-
-            if len(default_tasks) == 0:
-                # default behavior is to list tasks
-                self.list_tasks()
-                return
-
-            default_task = default_tasks[0]
-            default_task()
+        if self._try_execute_task(command):
             return
 
-        # specified
-        if task_name in self._tasks:
-            task = self._tasks[task_name]
-
-            # handle help
-            if "-h" in arg_lst or "--help" in arg_lst:
-                task.print_doc()
-                return
-
-            task(*args)
-            return
-
-        # not found
-        self.print_error(f"Task '{task_name}' not found.")
+        self.fail("Execution failed for unknown reason.")
 
     def task(
         self,
@@ -171,43 +215,51 @@ class PlzApp:
             self._tasks[func.__name__] = Task(
                 func=func, name=t_name, desc=t_desc, is_default=default, requires=required_tasks
             )
-            if default:
-                # set all builtins to not be default
-                for t in (t for t in self._tasks.values() if t.is_builtin):
-                    t.is_default = False
 
             return func
 
         return decorator
 
-    def print_error(self, msg: str):
-        self.print(msg, "red")
+    @staticmethod
+    def print_error(msg: str):
+        PlzApp.print(msg, "red")
 
-    def print_warning(self, msg: str):
-        self.print(msg, "yellow")
+    @staticmethod
+    def print_warning(msg: str):
+        PlzApp.print(msg, "yellow")
 
-    def print_weak(self, msg: str):
-        self.print(msg, "bright_black")
+    @staticmethod
+    def print_weak(msg: str):
+        PlzApp.print(msg, "bright_black")
 
-    def print(self, msg: str, color: str | None = None):
+    @staticmethod
+    def print(msg: str, color: str | None = None):
         if color:
             msg = f"[{color}]{msg}[/]"
         console.print(msg)
 
+    @staticmethod
+    def fail(msg: str | None = None):
+        if msg is not None:
+            PlzApp.print_error(msg)
+        sys.exit(1)
+
     def _print_help(self):
         """Print the general help message."""
-        console.print(r"Usage: [orange1]plz \[task] \[args][/]")
-        console.print("\nAvailable flags:")
-        console.print("  -h, --help    Show help for a specific task (or for plz if no task is provided)")
-        console.print("  -l, --list    List all available tasks")
-        console.print("\nAvailable tasks:")
+        self._parser.parser.print_help()
+        self.print(r"Usage: [orange1]plz \[task] \[args][/]")
+        self.print("\nAvailable flags:")
+        self.print("  -h, --help    Show help for a specific task (or for plz if no task is provided)")
+        self.print("  -l, --list    List all available tasks")
+        self.print("\nAvailable tasks:")
         self.list_tasks()
 
-    def _print_env(self, all: bool = False):
+    def _print_env(self, cmd: Command, all: bool = False):
         """
         prints the environment variable
         """
         ConsoleUtils.print_box(title=".env", rows=self._dotenv, sort=True)
+        ConsoleUtils.print_box(title="CLI", rows=cmd.env, sort=True)
         if all:
             env_vars = os.environ
             rows = [[key, value] for key, value in env_vars.items()]
@@ -241,7 +293,7 @@ class PlzApp:
             subprocess.TimeoutExpired: If the command times out.
         """
         if echo:
-            self.print_weak(f"Running command: `{command}`")
+            self.print_weak(f"Executing: `{command}`")
 
         if dry_run:
             self.print_warning(f"Dry run: {command}")

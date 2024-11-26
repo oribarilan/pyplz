@@ -38,8 +38,11 @@ No more bash scripts, makefiles or copy pasting commands from the docs.
 [x] running commands
 [ ] environment variables
     [x] .env file
-    [ ] command scope env variables
-    [ ] ad-hoc env variables
+    [ ] task definition
+    [x] cli
+    [ ] plz scope (in config)
+[ ] verbosity level
+    [ ] verbose loading env variables
 
 ### Backlog Should
 [x] move to toml based setup
