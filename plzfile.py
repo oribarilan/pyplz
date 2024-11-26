@@ -12,6 +12,16 @@ class Coffee(Enum):
 
 
 @plz.task()
+def lint():
+    plz.run("linting...")
+
+
+@plz.task()
+def test():
+    plz.run("testing...")
+
+
+@plz.task()
 def echo(msg: str):
     """Echo message"""
     plz.run(f"echo {msg} $a")
