@@ -7,11 +7,11 @@ from typing import List
 
 @dataclass
 class Command:
-    task: str
-    list: bool
-    help: bool
-    list_env: bool
-    list_env_all: bool
+    task: str | None = None
+    list: bool = False
+    help: bool = False
+    list_env: bool = False
+    list_env_all: bool = False
     _env: List[str] | None = None
     _args: List[str] | None = None
 

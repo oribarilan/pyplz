@@ -146,8 +146,9 @@ class PlzApp:
         if default_task is None:
             self.list_tasks()
             return True
-
-        return False
+        else:
+            default_task()
+            return True
 
     def _try_execute_task(self, command: Command) -> bool:
         if not command.has_task_specified():

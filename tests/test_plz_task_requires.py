@@ -1,19 +1,13 @@
 from __future__ import annotations
 
-from typing import Callable
 from unittest.mock import Mock, call
 
 
 from pyplz import plz
+from pyplz.command import Command
 
 
 class TestPlzTaskRequires:
-    def _run_task(self, func: Callable | None, *args):
-        func_name = func.__name__ if func else None
-        plz._main_execute(func_name, *args)
-
-    # region wrapped functions for pure functionality
-
     def test_task_requires_single(self):
         mock_parent = Mock()
         mock_parent.required, mock_parent.requires = Mock(), Mock()
@@ -26,7 +20,8 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        self._run_task(requires)
+        cmd = Command("requires")
+        plz._main_execute(cmd)
 
         # Assert the order of calls
         mock_parent.assert_has_calls([call.required(), call.requires()])
@@ -43,7 +38,8 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        self._run_task(requires)
+        cmd = Command("requires")
+        plz._main_execute(cmd)
 
         # Assert the order of calls
         mock_parent.assert_has_calls([call.required("arg1_value", "arg2_value"), call.requires()])
@@ -64,7 +60,8 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        self._run_task(requires)
+        cmd = Command("requires")
+        plz._main_execute(cmd)
 
         # Assert the order of calls
         mock_parent.assert_has_calls(
@@ -91,7 +88,8 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        self._run_task(requires)
+        cmd = Command("requires")
+        plz._main_execute(cmd)
 
         # Assert the order of calls
         mock_parent.assert_has_calls(
@@ -118,7 +116,8 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        self._run_task(requires)
+        cmd = Command("requires")
+        plz._main_execute(cmd)
 
         # Assert the order of calls
         mock_parent.assert_has_calls(
