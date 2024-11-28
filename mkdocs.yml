@@ -99,6 +99,8 @@ copyright: |
 nav:
     - Welcome to pyplz: index.md
     - Getting Started: getting_started.md
+    - features:
+      - Environment Variables: features/env_vars.md
     # - Reference:
         # - API Intro: reference/api_intro.md
         # - What's New: reference/release_notes.md

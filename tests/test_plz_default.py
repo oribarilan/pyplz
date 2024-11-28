@@ -9,7 +9,7 @@ from pyplz.command import Command
 from tests.test_utils import TestUtils
 
 
-class TestPlzMainExecute:
+class TestPlzDefault:
     @TestUtils.patch_method(plz.list_tasks)
     def test_default_behavior(self, mock_list_tasks):
         plz._main_execute(Command())

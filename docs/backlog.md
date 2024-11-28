@@ -13,6 +13,7 @@
     * [ ] plz scope (in config)
 - [ ] verbosity level
     * [ ] verbose loading env variables
+- [ ] what's new (changelog) + versioning
 
 ### Backlog Should
 - [x] move to toml based setup

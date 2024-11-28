@@ -82,9 +82,11 @@ class PlzApp:
         )
         console.print(panel)
 
+    def _get_dotenv_path(self) -> Path:
+        return Path(os.getcwd()) / ".env"
+
     def _load_environment_variables(self) -> list[list[str]]:
-        # Determine the path to the .env file
-        env_path = Path(os.getcwd()) / ".env"
+        env_path = self._get_dotenv_path()
 
         # Load the .env file if it exists
         if env_path.exists():
