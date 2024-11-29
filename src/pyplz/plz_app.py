@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 from dotenv import dotenv_values, load_dotenv
 from rich import box
@@ -32,7 +32,7 @@ class PlzApp:
 
     def configure(self):
         self._user_configured = True
-        self._dotenv = self._load_environment_variables()
+        self._dotenv = self._load_env_dotenv()
         # plz loads the CWD to the sys.path to allow plzfile to import freely
         sys.path.append(os.path.join(os.getcwd()))
 
@@ -85,7 +85,7 @@ class PlzApp:
     def _get_dotenv_path(self) -> Path:
         return Path(os.getcwd()) / ".env"
 
-    def _load_environment_variables(self) -> list[list[str]]:
+    def _load_env_dotenv(self) -> list[list[str]]:
         env_path = self._get_dotenv_path()
 
         # Load the .env file if it exists
@@ -173,7 +173,7 @@ class PlzApp:
         task(*command.args)
         return True
 
-    def _process_env_vars(self, command: Command):
+    def _load_env_cli(self, command: Command):
         for k, v in command.env:
             os.environ[k] = v
 
@@ -189,7 +189,7 @@ class PlzApp:
 
         self._load_plzfile()
 
-        self._process_env_vars(command)
+        self._load_env_cli(command)
 
         if self._try_execute_utility_commands(command):
             return
@@ -211,7 +211,22 @@ class PlzApp:
         desc: str | None = None,
         default: bool = False,
         requires: Callable | list[Callable | CallableWithArgs] | None = None,
+        envs: dict[str, Any] | None = None,
     ) -> Callable:
+        """Defines a plz task that can be executed from the command line.
+
+        Args:
+            name (str, optional): _description_. Defaults to the method name (with underscores replaced with hyphens).
+            desc (str, optional): _description_. Defaults to the method's docstring.
+            default (bool, optional): _description_. Defaults to False. If True, this task will be executed if no task
+                explicilty specified.
+            requires (Callable | list[Callable  |  CallableWithArgs] | None, optional): _description_. Defaults to None.
+                Defines the required tasks that will be executed before this task. Can be a single task (functions),
+                or a list of tasks (optionally with arguments). See examples below, or refrence the docs for more
+                information.
+            envs (dict[str, Any] | None, optional): _description_. Defaults to None. Defines task-level environment
+                variables that will be set before the task is executed.
+        """
         def decorator(func) -> Callable:
             t_name = name
             if name is None:
@@ -234,7 +249,7 @@ class PlzApp:
             required_tasks = [(self._tasks[r.__name__], args) for r, args in required_funcs]
 
             self._tasks[func.__name__] = Task(
-                func=func, name=t_name, desc=t_desc, is_default=default, requires=required_tasks
+                func=func, name=t_name, desc=t_desc, is_default=default, requires=required_tasks, task_env_vars=envs
             )
 
             return func
@@ -296,6 +311,7 @@ class PlzApp:
                 cli_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, shell=True
             )
             output = ""
+
             # Stream the output in real-time
             if process.stdout is None:
                 return "", 1

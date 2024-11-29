@@ -26,6 +26,11 @@ def echo(msg: str):
     plz.run(f"echo {msg} $a")
 
 
+@plz.task(envs={"a": "1"})
+def echo2():
+    plz.run("echo $a")
+
+
 @plz.task()
 def drink_coffee(type: Coffee = Coffee.ESPRESSO):
     """Brew coffee"""

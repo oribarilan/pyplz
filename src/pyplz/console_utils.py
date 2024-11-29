@@ -27,11 +27,11 @@ class ConsoleUtils:
         max_seoncd_length = max(max_seoncd_length, 15)
 
         table = Table(show_header=False, box=None, show_edge=False)
-        table.add_column("1", style="orange1", no_wrap=True, width=max_first_length + 2)
+        table.add_column("1", no_wrap=True, width=max_first_length + 2)
         table.add_column("2", style="white", no_wrap=True, width=max_seoncd_length + 2)
 
         for r in rows:
-            first = r[0] or ""
+            first = f"[bold]{r[0]}[/]" or ""
             second = r[1] or ""
             table.add_row(first, second)
 
@@ -46,7 +46,7 @@ class ConsoleUtils:
             table,
             title=title,
             title_align="left",
-            border_style="dark_orange3",
+            border_style="cyan",
             padding=(0, 1),
             box=box.ROUNDED,
             width=final_width,

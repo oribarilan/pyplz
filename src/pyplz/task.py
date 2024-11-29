@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import inspect
+import os
 from typing import Any, Callable
 
-from rich import box
 from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
+
+from pyplz.console_utils import ConsoleUtils
 
 
 console = Console()
@@ -21,6 +21,7 @@ class Task:
         requires: list[tuple[Task, tuple]] | None = None,  # List of tuples of tasks and their arguments
         is_default: bool = False,
         is_builtin: bool = False,
+        task_env_vars: dict[str, Any] | None = None,
     ) -> None:
         self.func = func
         self.name = name or func.__name__
@@ -36,11 +37,20 @@ class Task:
             requires = []
         self.requires = requires
 
+        # normalize task-scope environment variables
+        if task_env_vars is None:
+            task_env_vars = {}
+        self.task_env_vars = task_env_vars
+
     def __call__(self, *args) -> Any:
         """
         Call the task function and return the result.
         If the task function has any required functions, they will be called first (recursively).
         #"""
+        # load task-level environment variables
+        for key, value in self.task_env_vars.items():
+            os.environ[key] = value
+
         # Invoke required tasks first
         for r_task, r_args in self.requires:
             r_task(*r_args)
@@ -75,7 +85,6 @@ class Task:
 
     def print_doc(self):
         """Print the documentation of the task, including parameters."""
-        console = Console()
         sig = inspect.signature(self.func)
 
         # Build parameters list with types, default values, and optionality
@@ -94,28 +103,16 @@ class Task:
         # Get the docstring
         docstring = self.desc or "No description provided."
 
-        # Create a table to display the information
-        table = Table(show_header=False, box=None)
+        rows = []
         if dependencies:
-            table.add_row("[bold]Depends on[/bold]", ", ".join(dependencies))
-        table.add_row("[bold]Parameters[/bold]", ", ".join(params))
-        table.add_row("[bold]Description[/bold]", docstring.strip())
+            dependencies_line = ["Requires", ", ".join(dependencies)]
+            rows.append(dependencies_line)
+        parameters_line = ["Parameters", ", ".join(params)]
+        rows.append(parameters_line)
+        desc_line = ["Description", docstring.strip()]
+        rows.append(desc_line)
 
-        # Calculate the required width
-        max_param_length = max(len(param) for param in params) if params else 0
-        max_desc_length = max(len(line) for line in docstring.split("\n"))
-        required_width = max(max_param_length, max_desc_length) + 20
-        terminal_width = console.size.width
-        final_width = min(required_width, terminal_width)
+        ConsoleUtils.print_box(self.name, rows, sort=False)
 
-        # Create a panel to enclose the table
-        panel = Panel(
-            table,
-            title=f"{self.name}",
-            title_align="left",
-            border_style="cyan",
-            padding=(0, 1),
-            box=box.ROUNDED,
-            width=final_width,
-        )
-        console.print(panel)
+        env_vars_values = [[k, v] for k, v in self.task_env_vars.items()]
+        ConsoleUtils.print_box("Task-defined Environment", env_vars_values)
