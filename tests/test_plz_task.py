@@ -59,6 +59,18 @@ class TestPlzTask:
 
         mock_func.assert_called_once_with("arg1_value", "arg2_value")
 
+    def test_task_with_positional_arguments(self):
+        mock_func = Mock()
+
+        @plz.task()
+        def sample_task(*args):
+            mock_func(*args)
+
+        cmd = Command("sample_task", _args=["arg1_value", "arg2_value"])
+        plz._main_execute(cmd)
+
+        mock_func.assert_called_once_with("arg1_value", "arg2_value")
+
     def test_task_with_default_arguments(self):
         mock_func = Mock()
 

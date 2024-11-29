@@ -11,7 +11,7 @@
 | default                    | v           | v      |       |
 | help                       | v           |        | v     |
 | dependencies               | v           | v      |       |
-| plz.run with *args         |             |        |       |
+| plz.run with *args         |      v       |  v      |   v    |
 | verbosity                  |             |        |       |
 
 ## Should

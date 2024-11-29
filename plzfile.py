@@ -21,9 +21,9 @@ def test():
 
 
 @plz.task()
-def echo(msg: str):
+def echo(*args):
     """Echo message"""
-    plz.run(f"echo {msg} $a")
+    plz.run(f"echo {' '.join(args)}")
 
 
 @plz.task(envs={"a": "1"})
@@ -63,21 +63,3 @@ def doc():
 @plz.task(requires=doc)
 def doc_serve():
     plz.run("mkdocs serve")
-
-
-# @plz.task(requires=[(drink_coffee, (Coffee.DOUBLE_ESPRESSO,))])
-# def check_emails():
-#     """Check emails"""
-#     plz.print("Checking emails")
-
-
-# @plz.task()
-# def take_a_nap(minutes: int = 10):
-#     """Take a nap"""
-#     plz.print(f"Taking a nap for {minutes} minutes")
-
-
-# @plz.task(requires=[check_emails, (take_a_nap, (5,))])
-# def write_report():
-#     """Write report"""
-#     plz.print("Writing report")

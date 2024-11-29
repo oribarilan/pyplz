@@ -215,6 +215,10 @@ class PlzApp:
     ) -> Callable:
         """Defines a plz task that can be executed from the command line.
 
+        Functions decorated with `plz.task` will be registered as tasks that can be executed from the command line.
+        They can also accept arguments which will get documented in the task's help message.
+        Also, you can declare *args to accept any number of positional arguments.
+
         Args:
             name (str, optional): _description_. Defaults to the method name (with underscores replaced with hyphens).
             desc (str, optional): _description_. Defaults to the method's docstring.
