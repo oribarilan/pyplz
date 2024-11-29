@@ -1,12 +1,17 @@
-# pyplz
+#  <img src="docs/assets/please.png" alt="drawing" width="40" height="40"/> pyplz
 
-`pyplz` - a python-first, friction-free, task runner.
+Python-first Friction-free Task Runner.
+
+[//]: # (bages using https://shields.io/badges/)
+[![build](https://img.shields.io/github/actions/workflow/status/oribarilan/plz/package_build.yml)](https://github.com/oribarilan/plz/actions/workflows/package_build.yml) [![coverage](https://img.shields.io/github/actions/workflow/status/oribarilan/plz/coverage.yml?label=coverage%3E95%25)](https://github.com/oribarilan/plz/actions/workflows/coverage.yml)
+
+[![Python Versions](https://img.shields.io/badge/python-3.8|3.9|3.10|3.11|3.12-blue)](https://www.python.org/downloads/) [![PyPI - Version](https://img.shields.io/pypi/v/pyplz?color=1E7FBF)](https://pypi.org/project/pyplz/) [![Downloads](https://img.shields.io/pypi/dm/pyplz?color=1E7FBF)](https://pypi.org/project/pyplz/)
+
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ```bash
 pip install pyplz
 ```
-
-## Demo
 
 ## Why use a task runner?
 A task runner automates tasks like building, testing, and deploying, making them
@@ -29,9 +34,7 @@ faster and more reliable. It ensures consistent execution and simplifies collabo
 2. Create a `plzfile.py` in the root of your project
 3. Using your terminal, execute `plz` in the root of your project
 
-!!! info "Dev Dependencies"
-
-    Development dependencies (e.g., `pytest`) are best included in a dedicated file (e.g. `requirements.dev.txt`). Add `plz` to your dev dependencies to make it available in development, out of the box, for every project contributor.
+> Development dependencies (e.g., `pytest`) are best included in a dedicated file (e.g. `requirements.dev.txt`). Add `plz` to your dev dependencies to make it available in development, out of the box, for every project contributor.
 
 
 ### Example

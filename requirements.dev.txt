@@ -1,5 +1,6 @@
 pip-tools
-pytest
+pytest~=7.4.2
+coverage~=7.3.2
 ruff
 mkdocs~=1.5.2
 mkdocs-material~=9.5

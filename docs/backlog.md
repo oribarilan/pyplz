@@ -17,15 +17,18 @@
 ## Should
 - [x] doc pages
 - [x] move to toml based setup
-- [ ] CI with test
+- [x] CI with test
 - [ ] CI with test coverage
-- [ ] CD
+- [x] CD
+- [x] badges
+- [ ] work on coverage
+- [ ] bug of trace when command fails (1 output in white, 1 output in red, then long traceback)
+- [ ] convert _ to - in task names
 - [ ] what's new (changelog) + versioning
 - [ ] testable examples in docs
 
 ### Could
 - [ ] heirachial loading
-- [ ] order commands
 - [ ] `plz .create-demo`
 - [ ] async commands
 - [ ] `plz.progress`
