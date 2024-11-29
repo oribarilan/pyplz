@@ -33,3 +33,4 @@ For example:
 
 ```bash
 plz -e VERBOSE=true -e DEBUG=true build
+```
