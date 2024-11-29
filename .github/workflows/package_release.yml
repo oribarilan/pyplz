@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   core_build:
-    uses: ./.github/workflows/core_build.yml
+    uses: ./.github/workflows/package_build.yml
 
   pypi-publish:
     name: Upload release to PyPI

@@ -27,6 +27,10 @@ class PlzApp:
         self._tasks: dict[str, Task] = dict()
         self._user_configured = False
 
+    def _reset(self):
+        self._tasks = dict()
+        self._user_configured = False
+
     def _configure(self, parser: Parser):
         self._parser = parser
 

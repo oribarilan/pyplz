@@ -1,6 +1,15 @@
 from typing import Callable
 from unittest.mock import patch
 
+import pytest
+
+from pyplz import plz
+
+
+@pytest.fixture(autouse=True)
+def patch_methods():
+    plz._reset()
+
 
 class TestUtils:
     @staticmethod

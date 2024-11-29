@@ -6,7 +6,7 @@ from pathlib import Path
 
 from pyplz import plz
 from pyplz.command import Command
-from tests.test_utils import TestUtils
+from tests.conftest import TestUtils
 
 
 class TestPlzEnv:

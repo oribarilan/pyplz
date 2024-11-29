@@ -5,7 +5,7 @@ import subprocess
 import pytest
 
 from pyplz import plz
-from tests.test_utils import TestUtils
+from tests.conftest import TestUtils
 
 
 class TestPlzRun:
