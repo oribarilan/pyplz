@@ -4,7 +4,7 @@ from pyplz import plz
 @plz.task()
 def lint():
     """Lint code"""
-    plz.run("ruff check")
+    plz.run("ruff check src/pyplz")
 
 
 @plz.task()
