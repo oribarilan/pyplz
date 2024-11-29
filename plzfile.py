@@ -13,6 +13,14 @@ def test():
     plz.run("pytest")
 
 
+@plz.task()
+def test_coverage():
+    """Run tests with coverage"""
+    # execute tests with coverage
+    plz.run("coverage run --source 'src/pyplz/' --omit '*/__pycache__/*' -m pytest")
+    plz.run("coverage report -m --fail-under=95")
+
+
 @plz.task(requires=[lint, test])
 def validate():
     """Validate code (lint and test)"""
