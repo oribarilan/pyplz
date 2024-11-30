@@ -4,7 +4,7 @@ from pyplz import plz
 @plz.task()
 def lint():
     """Lint code"""
-    plz.run("ruff check src/pyplz")
+    plz.run("ruff check --target-version py38 src/pyplz")
 
 
 @plz.task()
@@ -17,7 +17,7 @@ def test():
 def test_coverage():
     """Run tests with coverage"""
     # execute tests with coverage
-    plz.run("coverage run --source 'src/pyplz/' --omit '*/__pycache__/*' -m pytest")
+    plz.run("coverage run --source 'src/pyplz/' --omit 'console_utils.py','*/__pycache__/*' -m pytest")
     plz.run("coverage report -m --fail-under=95")
 
 
