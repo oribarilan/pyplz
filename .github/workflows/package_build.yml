@@ -1,7 +1,6 @@
 name: PR & Master Build
 
-on:
-  workflow_call
+on: [push, pull_request]
 
 jobs:
   build:
