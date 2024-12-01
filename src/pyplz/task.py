@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import os
+import sys
 from typing import Any, Callable
 
 from rich.console import Console
@@ -70,7 +71,7 @@ class Task:
             missing_params = params[args_num:]
             missing = ", ".join(p.name for p in missing_params)
             console.print(f"[red]Missing arguments for task '{self.name}': {missing}[/]")
-            return
+            sys.exit(1)
 
         ret = self.func(*args)
         if ret is not None:

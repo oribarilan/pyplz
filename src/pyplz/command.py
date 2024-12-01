@@ -59,17 +59,30 @@ class Parser:
         )
         self.parser.add_argument("args", nargs=argparse.REMAINDER, help="Additional arguments for the task")
 
+    def _split_env_vars_from_args(self, args: List[str]) -> tuple[List[str], List[str]]:
+        env_vars = []
+        arguments = []
+        i = 0
+        while i < len(args):
+            if (args[i] == "-e" or args[i] == "--env") and i + 1 < len(args):
+                env_vars.append(args[i + 1])
+                i += 2
+            else:
+                arguments.append(args[i])
+                i += 1
+        return env_vars, arguments
+
     def parse_args(self, argv: list[str]) -> Command:
         args = self.parser.parse_args(argv)
 
         generic_task_flags = ["-h", "--help", "--list-env"]
         clean_args = [arg for arg in args.args if arg not in generic_task_flags]
 
-        if "-h" in args.args or "--help" in args.args:
-            args.help = True
+        task_env_vars, arguments = self._split_env_vars_from_args(clean_args)
 
-        if "--list-env" in args.args:
-            args.list_env = True
+        # join both env vars list
+        args.env = args.env or []
+        args.env.extend(task_env_vars)
 
         return Command(
             task=args.task,
@@ -78,5 +91,5 @@ class Parser:
             list_env=args.list_env,
             list_env_all=args.list_env_all,
             _env=args.env,
-            _args=clean_args,
+            _args=arguments,
         )

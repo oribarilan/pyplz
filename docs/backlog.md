@@ -15,6 +15,7 @@
 | verbosity                  |             |        |       |
 
 ## Should
+- [ ] bug - double tasks in PR (both push and pull_request), which is not needed
 - [x] doc pages
 - [x] move to toml based setup
 - [x] CI with test

@@ -2,6 +2,10 @@
 
 Python-first Friction-free Task Runner.
 
+⚠️ Please note ⚠️
+
+`pyplz` is currently in early development. While it is already usable, some features are still missing, incomplete or not fully documented. Feel free to open an issue if you have any feedback or suggestions.
+
 [//]: # (bages using https://shields.io/badges/)
 [![build](https://img.shields.io/github/actions/workflow/status/oribarilan/plz/package_build.yml)](https://github.com/oribarilan/plz/actions/workflows/package_build.yml) [![coverage](https://img.shields.io/github/actions/workflow/status/oribarilan/plz/coverage.yml?label=coverage%3E95%25)](https://github.com/oribarilan/plz/actions/workflows/coverage.yml)
 

@@ -34,3 +34,9 @@ For example:
 ```bash
 plz -e VERBOSE=true -e DEBUG=true build
 ```
+
+This can also be mixed with task arguments, for convenience:
+
+```bash
+plz build arg1 -e VERBOSE=true arg2
+```
