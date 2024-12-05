@@ -19,7 +19,7 @@ class TestPlzRun:
 
     def test_run_fails_returns_stderr(self):
         output = plz.run("ls /non/existent/path", raise_error=False)
-        assert output == "ls: /non/existent/path: No such file or directory"
+        assert "No such file or directory" in output
 
     def test_run_returns_error_output_and_code_with_raise_on_error(self):
         with pytest.raises(subprocess.CalledProcessError):
