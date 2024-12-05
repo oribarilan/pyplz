@@ -17,7 +17,7 @@ class TestPlzRun:
         output = plz.run("echo 'hello\nworld\nechoed'")
         assert output == "hello\nworld\nechoed"
 
-    def test_run_returns_empty_output(self):
+    def test_run_fails_returns_stderr(self):
         output = plz.run("ls /non/existent/path", raise_error=False)
         assert output == "ls: /non/existent/path: No such file or directory"
 
