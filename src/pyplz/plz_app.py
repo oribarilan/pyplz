@@ -329,11 +329,11 @@ class PlzApp:
             command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, shell=True
         ) as process:
             try:
-                if process.stdout is not None:
-                    for line in iter(process.stdout.readline, ""):
-                        output += line
-                        self.print(line.rstrip(), silent=silent)
-                process.wait(timeout=timeout_secs)
+                stdout, _ = process.communicate(timeout=timeout_secs)
+                output += stdout if stdout else ""
+                if not silent and stdout:
+                    for line in stdout.splitlines():
+                        self.print(line.rstrip())
             except subprocess.TimeoutExpired:
                 process.kill()
                 stdout, _ = process.communicate()
@@ -341,9 +341,8 @@ class PlzApp:
                 if not silent and stdout:
                     for line in stdout.splitlines():
                         self.print(line.rstrip())
-                if raise_error:
-                    timeout = 0 if timeout_secs is None else timeout_secs
-                    raise subprocess.TimeoutExpired(cmd=command, timeout=timeout, output=output)
+                if raise_error and timeout_secs is not None:
+                    raise subprocess.TimeoutExpired(cmd=command, timeout=timeout_secs, output=output)
             except subprocess.CalledProcessError as e:
                 if raise_error:
                     raise e
@@ -393,17 +392,19 @@ class PlzApp:
             self.print_weak(f"Executing: `{command_w_vars}`")
 
         if dry_run:
-            self.print_warning(f"Dry Run: `{command_w_vars}`")
+            self.print_warning(f"Dry run: `{command_w_vars}`")
             return ""
 
         try:
             output_str, exit_code = self._run_cli_command(
                 command, env=env, raise_error=raise_error, timeout_secs=timeout_secs, silent=silent
             )
+            output_str = output_str.strip()
             if exit_code != 0:
                 self.print_error(f"Execution Failed: `{command_w_vars}`")
                 if raise_error:
                     raise subprocess.CalledProcessError(exit_code, command_w_vars, output_str)
+                return output_str
             else:
                 return output_str
         except subprocess.CalledProcessError as e:
