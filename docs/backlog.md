@@ -13,6 +13,7 @@
 | dependencies               | v           | v      | v     |
 | plz.run with *args         | v           | v      | v     |
 | verbosity                  |             |        |       |
+| ask                        | v           |        |       |
 
 ## Should
 - [ ] bug - double tasks in PR (both push and pull_request), which is not needed

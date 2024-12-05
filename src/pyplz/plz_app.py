@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import inspect
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -315,43 +316,39 @@ class PlzApp:
 
     def _run_cli_command(
         self,
-        cli_command: str,
+        command: str,
         print: bool = True,
         env: dict[str, str] | None = None,
         raise_error: bool = True,
         timeout_secs: float | None = None,
         silent: bool = False,
     ) -> tuple[str, int]:
-        try:
-            # Open a subprocess
-            process = subprocess.Popen(
-                cli_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, shell=True
-            )
-            output = ""
+        output = ""
 
+        with subprocess.Popen(
+            command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, shell=True
+        ) as process:
             try:
-                # Stream the output in real-time with a timeout
                 stdout, _ = process.communicate(timeout=timeout_secs)
-                output += stdout
-                if print:
+                output += stdout if stdout else ""
+                if not silent and stdout:
                     for line in stdout.splitlines():
-                        self.print(line.rstrip(), silent=silent)
+                        self.print(line.rstrip())
             except subprocess.TimeoutExpired:
                 process.kill()
                 stdout, _ = process.communicate()
-                output += stdout
-                if print:
+                output += stdout if stdout else ""
+                if not silent and stdout:
                     for line in stdout.splitlines():
                         self.print(line.rstrip())
+                if raise_error and timeout_secs is not None:
+                    raise subprocess.TimeoutExpired(cmd=command, timeout=timeout_secs, output=output)
+            except subprocess.CalledProcessError as e:
                 if raise_error:
-                    timeout_secs = timeout_secs if timeout_secs is not None else 0.0
-                    raise subprocess.TimeoutExpired(cmd=cli_command, timeout=timeout_secs, output=output)
+                    raise e
+                return str(e), e.returncode
 
-            return output, process.returncode
-        except subprocess.CalledProcessError as e:
-            if raise_error:
-                raise RuntimeError(f"Command '{cli_command}' failed with error: {e}")
-            return str(e), e.returncode
+        return output, process.returncode
 
     def run(
         self,
@@ -362,9 +359,9 @@ class PlzApp:
         echo: bool = True,
         raise_error: bool = True,
         silent: bool = False,
-    ) -> tuple[str, int]:
+    ) -> str:
         """
-        Executes a shell command with optional environment variables, timeout, and dry run mode.
+        Executes a shell command with optional environment variables, timeout, and dry run mode, and more.
         Args:
             command (str): The shell command to execute.
             env (dict[str, str], optional): A dictionary of environment variables to set for the command.
@@ -372,43 +369,77 @@ class PlzApp:
             timeout_secs (float, optional): The maximum number of seconds to allow the command to run. Defaults to None.
             dry_run (bool): If True, the command will not be executed, and a dry run message will be printed.
                 Defaults to False.
-            echo (bool): If True, the command will be printed before execution. Defaults to True.
-            silent (bool): If True, execution will only print errors. Defaults to False.
+            echo (bool): If True, the command will be printed before execution (with environment variables replaced).
+                Defaults to True.
+            silent (bool): If True, command execution will only print errors. Defaults to False.
         Returns:
-            The standard output of the command, or None if the command failed.
+            The standard output of the command if it was successful or the standard error if it failed.
         Raises:
             subprocess.CalledProcessError: If the command returns a non-zero exit status.
             subprocess.TimeoutExpired: If the command times out.
         """
-        if echo and not dry_run:
-            self.print_weak(f"Executing: `{command}`", silent=silent)
-
-        if dry_run:
-            self.print_warning(f"Dry run: `{command}`", silent=silent)
-            return ("", 0)
-
         # Merge provided env with the current environment variables
         env = {**os.environ, **(env or {})}
+
+        # replace env variables in the command
+        def replace_env_var(match):
+            var_name = match.group(1)
+            return env.get(var_name, f"${{{var_name}}}")
+
+        command_w_vars = re.sub(r"\$(\w+)", replace_env_var, command)
+
+        if echo and not dry_run:
+            self.print_weak(f"Executing: `{command_w_vars}`")
+
+        if dry_run:
+            self.print_warning(f"Dry run: `{command_w_vars}`")
+            return ""
 
         try:
             output_str, exit_code = self._run_cli_command(
                 command, env=env, raise_error=raise_error, timeout_secs=timeout_secs, silent=silent
             )
+            output_str = output_str.strip()
             if exit_code != 0:
-                self.print_error(output_str)
+                self.print_error(f"Execution Failed: `{command_w_vars}`")
                 if raise_error:
-                    raise subprocess.CalledProcessError(exit_code, command, output_str)
-            return output_str, exit_code
+                    raise subprocess.CalledProcessError(exit_code, command_w_vars, output_str)
+                return output_str
+            else:
+                return output_str
         except subprocess.CalledProcessError as e:
-            self.print_error(f"Command '{command}' failed with error: {e}")
+            self.print_error(f"Command '{command_w_vars}' failed with error: {e}")
             if raise_error:
                 raise e
         except subprocess.TimeoutExpired as e:
-            self.print_error(f"Command '{command}' timed out after {timeout_secs} seconds, {e}")
+            self.print_error(f"Command '{command_w_vars}' timed out after {timeout_secs} seconds, {e}")
             if raise_error:
                 raise e
 
-        return ("", 1)
+        return ""
+
+    def ask(self, question: str | None = None, silent: bool = False) -> bool:
+        """
+        Asks the user a yes/no question and returns a boolean based on the response.
+
+        Args:
+            question (str): The question to ask the user. Defaults to "Are you sure [y] / [n]".
+            silent (bool): If True, response will not be declared. Defaults to False.
+        Returns:
+            bool: True if the user responds with 'y' or 'Y', False otherwise.
+        """
+        if question is None:
+            question = "Are you sure you want to proceed? (y/n) [n]:"
+        while True:
+            response = input(f"{question} ").strip().lower()
+            if response in ["y", "n", "Y", "N", ""]:
+                if response.lower() == "y":
+                    self.print_weak("Accepted", silent=silent)
+                    return True
+                else:
+                    self.print_weak("Declined", silent=silent)
+                    return False
+            self.print_warning("Please respond with 'y' or 'n'. Enter will default to 'n'.")
 
 
 plz = PlzApp()

@@ -10,18 +10,16 @@ from tests.conftest import TestUtils
 
 class TestPlzRun:
     def test_run_returns_output_and_code(self):
-        output, exit_code = plz.run("echo hello")
-        assert output == "hello\n"
-        assert exit_code == 0
+        output = plz.run("echo hello")
+        assert output == "hello"
 
     def test_run_returns_multiline_output_and_code(self):
-        output, exit_code = plz.run("echo 'hello\nworld\nechoed'")
-        assert output == "hello\nworld\nechoed\n"
-        assert exit_code == 0
+        output = plz.run("echo 'hello\nworld\nechoed'")
+        assert output == "hello\nworld\nechoed"
 
-    def test_run_returns_error_output_and_code(self):
-        output, exit_code = plz.run("ls /non/existent/path", raise_error=False)
-        assert exit_code != 0
+    def test_run_fails_returns_stderr(self):
+        output = plz.run("ls /non/existent/path", raise_error=False)
+        assert "No such file or directory" in output
 
     def test_run_returns_error_output_and_code_with_raise_on_error(self):
         with pytest.raises(subprocess.CalledProcessError):
@@ -29,7 +27,7 @@ class TestPlzRun:
 
     def test_run_timeout(self):
         with pytest.raises(subprocess.TimeoutExpired):
-            plz.run("sleep 3", timeout_secs=1)
+            plz.run("sleep 5", timeout_secs=1)
 
     def test_run_echo_true(self, capfd):
         cmd = "echo hello"
@@ -58,5 +56,12 @@ class TestPlzRun:
     def test_run_silent(self, capfd):
         cmd = "echo hello"
         plz.run(cmd, silent=True)
+        lines = capfd.readouterr().out.splitlines()
+        assert len(lines) == 1
+        assert lines[0] == "Executing: `echo hello`"
+
+    def test_run_silent_without_echo(self, capfd):
+        cmd = "echo hello"
+        plz.run(cmd, silent=True, echo=False)
         lines = capfd.readouterr().out.splitlines()
         assert len(lines) == 0
