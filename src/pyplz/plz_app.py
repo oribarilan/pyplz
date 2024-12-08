@@ -41,10 +41,6 @@ class PlzApp:
         # plz loads the CWD to the sys.path to allow plzfile to import freely
         sys.path.append(os.path.join(os.getcwd()))
 
-    def _add_builtin(self, name: str, desc: str, func: Callable) -> None:
-        task = Task(func=func, name=name, desc=desc, is_builtin=True, is_default=False)
-        self._tasks[task.name] = task
-
     def list_tasks(self):
         """List all available tasks."""
         if all(t.is_builtin for t in self._tasks.values()):

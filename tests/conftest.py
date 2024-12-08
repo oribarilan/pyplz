@@ -6,8 +6,15 @@ import pytest
 from pyplz import plz
 
 
-@pytest.fixture(autouse=True)
-def patch_methods():
+@pytest.fixture(scope="session", autouse=True)
+def clear_plz():
+    with patch("pyplz.plz._load_plzfile") as mock_load_plzfile:
+        mock_load_plzfile.return_value = None
+        yield
+
+
+@pytest.fixture(scope="function", autouse=True)
+def reset_plz():
     plz._reset()
 
 
