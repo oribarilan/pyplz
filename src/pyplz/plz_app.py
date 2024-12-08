@@ -328,12 +328,12 @@ class PlzApp:
         with subprocess.Popen(
             command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, shell=True
         ) as process:
+            if process.stdout is None:
+                return "", 0
             try:
-                stdout, _ = process.communicate(timeout=timeout_secs)
-                output += stdout if stdout else ""
-                if not silent and stdout:
-                    for line in stdout.splitlines():
-                        self.print(line.rstrip())
+                for line in process.stdout:
+                    self.print(line.strip())
+                process.wait()
             except subprocess.TimeoutExpired:
                 process.kill()
                 stdout, _ = process.communicate()

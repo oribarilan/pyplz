@@ -38,3 +38,8 @@ def doc():
 @plz.task(requires=doc)
 def doc_serve():
     plz.run("mkdocs serve")
+
+
+@plz.task()
+def test_long():
+    plz.run("scripts/stdout_w_input_demo.sh")

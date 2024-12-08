@@ -27,7 +27,7 @@ faster and more reliable. It ensures consistent execution and simplifies collabo
 `pyplz` aims to be a friction-free task runner. While task runners simplify development, they often add friction with new syntax, extra tools, or integration issues.
 
 1. **Python-first**: Familiar syntax, flexible, and powerful. If you know Python, you know `pyplz`.
-2. **Simplicity**: Common features are built-in and work out of the box. No need for hafty configuration or tinkering.
+2. **Author-friendly**: Simple and intuitive. Works out of the box with no configuration. Debugging is possible.
 3. **Integration**: If it can run Python, it can run `pyplz`. Use it in your project's dev environment, container, CI/CD, or anywhere else.
 4. **Documentation**: `pyplz` offers extensive docs as well as generates task-specific help documentation, ensuring clarity and ease of use.
 
