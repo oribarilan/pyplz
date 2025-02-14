@@ -78,13 +78,18 @@ class Task:
             console.print(ret)
 
     def __str__(self) -> str:
-        tags = f"{'[default]' if self.is_default else ''}{'[builtin]' if self.is_builtin else ''}"
-        return f"{self.name} {tags}"
+        tags = []
+        if self.is_default:
+            tags.append("[default]")
+        if self.is_builtin:
+            tags.append("[builtin]")
+        tags_str = (" " + " ".join(tags)) if tags else ""
+        return self.name + tags_str
 
     def __repr__(self) -> str:
         return self.__str__()
 
-    def print_doc(self):
+    def print_help(self):
         """Print the documentation of the task, including parameters."""
         sig = inspect.signature(self.func)
 

@@ -55,6 +55,16 @@ class TestParser:
         assert cmd.args == []
         assert not cmd.is_default()
 
+    def test_parser_task_with_help(self):
+        parser = Parser()
+
+        cmd = parser.parse_args(["some-task", "-h"])
+
+        assert cmd.has_task_specified()
+        assert cmd.args == []
+        assert not cmd.is_default()
+        assert cmd.help
+
     def test_parser_task_with_args(self):
         parser = Parser()
 

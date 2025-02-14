@@ -82,3 +82,14 @@ class TestPlzTask:
         plz._main_execute(cmd)
 
         mock_func.assert_called_once_with("default1", "default2")
+
+    def test_task_prints_return_value(self, capfd):
+        @plz.task()
+        def sample_task():
+            return "Task executed"
+
+        cmd = Command("sample_task")
+        plz._main_execute(cmd)
+
+        captured = capfd.readouterr()
+        assert "Task executed" in captured.out

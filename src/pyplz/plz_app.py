@@ -164,7 +164,7 @@ class PlzApp:
         task = self._tasks[command.task]
 
         if command.help:
-            task.print_doc()
+            task.print_help()
             return True
 
         if command.list_env:
