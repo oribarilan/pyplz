@@ -1,9 +1,8 @@
 import sys
 from unittest.mock import Mock
 
-from pyplz.main import main
-
 from pyplz import plz
+from pyplz.main import main
 
 
 class TestMain:
