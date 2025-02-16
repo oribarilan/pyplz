@@ -6,7 +6,7 @@
 | env task definition        | v           | v      | v     |
 | env in-line                | v           | v      | v     |
 | env config                 |             |        |       |
-| plz declare file type (-f) |             |        |       |
+| plz declare file path (-f) |             |        |       |
 | list                       | v           |        |       |
 | default                    | v           | v      |       |
 | help                       | v           |        | v     |

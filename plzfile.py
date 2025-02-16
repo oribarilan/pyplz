@@ -29,6 +29,7 @@ def validate():
 
 @plz.task()
 def doc():
+    """Build documentation"""
     from scripts import doc_gen
 
     doc_gen.create_index_doc()
@@ -37,9 +38,5 @@ def doc():
 
 @plz.task(requires=doc)
 def doc_serve():
+    """Serve documentation"""
     plz.run("mkdocs serve")
-
-
-@plz.task(envs={"foo": "bar"})
-def testing(hey: bool, some_int: int = 10):
-    plz.print(f"Hey: {hey}, Some int: {some_int}")

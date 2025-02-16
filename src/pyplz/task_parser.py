@@ -21,6 +21,7 @@ class TaskParser:
     def _add_task_arguments(self, task: Task):
         """Dynamically add arguments to the task parser based on the task's signature."""
         sig = inspect.signature(task.func)
+        self._parser.description = task.desc
         g_system = self._parser.add_argument_group(title="system options")
         g_required = self._parser.add_argument_group(title="required arguments")
         g_optional = self._parser.add_argument_group(title="optional arguments")
@@ -42,6 +43,8 @@ class TaskParser:
             is_required = not is_nullable and not has_default
 
             kwargs = {}
+            brackets_info = []
+            brackets_info.append(param_type.__name__)
 
             # annotation is the type hint, can either be a type or a string
             # (in case of forward references using __future__)
@@ -50,11 +53,11 @@ class TaskParser:
                 # bool is a special case, as it's always optional
                 is_required = False
                 if has_default and param.default is True:
-                    help += " (default: true)"
+                    brackets_info.append("default: true")
                     default = True
                     action = "store_false"
                 else:
-                    help += " (default: false)"
+                    brackets_info.append("default: false")
                     default = False
                     action = "store_true"
                 kwargs["default"] = default
@@ -64,8 +67,10 @@ class TaskParser:
                 if has_default:
                     default = param.default
                     kwargs["default"] = default
-                    help += f" (default: {param.default})"
+                    brackets_info.append(f"default: {default}")
                 kwargs["type"] = param_type
+
+            help += f" ({', '.join(brackets_info)})"
 
             group = g_required if is_required else g_optional
 

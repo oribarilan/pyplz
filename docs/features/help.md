@@ -1,21 +1,19 @@
 # Auto Help
 
+`pyplz` offers dynamic help documentation, so your tasks get command-line documentation automatically.
+
 ## plz-level help
 
 The `plz` command has a built-in help system. You can access it by running `plz -h` or `plz --help`. 
 
-This will include:
-* Usage pattern
-* Available flags
-* Available tasks
-* Plz-level Environment variables (for more info on environment variables, see [Environment Variables](./env_vars.md))
-
 ## task-level help
 
-You can also get help for a specific task by running `plz -h <task-name>` or `plz --help <task-name>`.
+`pyplz` generates dynamic cli help documentation for your defined tasks.
+Refrence it by running:
 
-This will display more detailed information about the task, including:
-* Dependencies
-* Description
-* Parameters
-* Task-level Environment variables (for more info on environment variables, see [Environment Variables](./env_vars.md))
+```bash
+plz <some-task-name> -h
+```
+
+!!! tip "Tip"
+    Task docstring will appear in the help documentation.
