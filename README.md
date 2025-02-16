@@ -26,10 +26,13 @@ faster and more reliable. It ensures consistent execution and simplifies collabo
 
 `pyplz` aims to be a friction-free task runner. While task runners simplify development, they often add friction with new syntax, extra tools, or integration issues.
 
-1. **Python-first**: Familiar syntax, flexible, and powerful. If you know Python, you know `pyplz`.
-2. **Author-friendly**: Simple and intuitive. Works out of the box with no configuration. Debugging is possible.
-3. **Integration**: If it can run Python, it can run `pyplz`. Use it in your project's dev environment, container, CI/CD, or anywhere else.
-4. **Documentation**: `pyplz` offers extensive docs as well as generates task-specific help documentation, ensuring clarity and ease of use.
+`pyplz` aims to be a friction-free task runner. While many task runners simplify development, they can also add friction with unfamiliar syntax, extra tools, or difficult integrations.
+
+🐍 **Python-first**: Leverage familiar Python syntax—if you know Python, you know `pyplz`.  
+🤗 **Author-friendly**: Intuitive and ready to use out of the box, with built-in support for debugging.  
+💻 **CLI-compliant**: Enjoy a command-line interface that adheres to GNU and POSIX conventions, ensuring a seamless terminal experience.
+🔗 **Integration-ready**: Whether you're running Python locally, in containers, or in a CI/CD pipeline, `pyplz` fits seamlessly into your environment.  
+📚 **Documented**: Access extensive documentation and automatically generated task-specific help, ensuring you always have the information you need.
 
 ## Getting Started
 
@@ -38,7 +41,8 @@ faster and more reliable. It ensures consistent execution and simplifies collabo
 2. Create a `plzfile.py` in the root of your project
 3. Using your terminal, execute `plz` in the root of your project
 
-> Development dependencies (e.g., `pytest`) are best included in a dedicated file (e.g. `requirements.dev.txt`). Add `plz` to your dev dependencies to make it available in development, out of the box, for every project contributor.
+!!! tip "Development Dependencies"
+    For best practice, include development dependencies (e.g., `pytest`) in a dedicated file (such as `requirements.dev.txt`). Add `pyplz` to your dev dependencies to ensure it's available out of the box for every project contributor.
 
 
 ### Example
