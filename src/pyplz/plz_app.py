@@ -27,6 +27,7 @@ class PlzApp:
     def __init__(self) -> None:
         self._tasks: dict[str, Task] = dict()
         self._user_configured = False
+        self._configured_envs: list[list[str]] = []
 
     def _reset(self):
         self._tasks = dict()
@@ -40,6 +41,7 @@ class PlzApp:
 
         if env:
             env_vars = [[k, v] for k, v in env.items()]
+            self._configured_envs = env_vars
             self._load_env_vars(env_vars)
 
     def list_tasks(self):
@@ -109,11 +111,11 @@ class PlzApp:
             self.list_tasks()
             return True
 
-        if command.list_env:
+        if command.show_env:
             self._print_env(cmd=command)
             return True
 
-        if command.list_env_all:
+        if command.show_env_all:
             self._print_env(cmd=command, all=True)
             return True
 
@@ -150,7 +152,7 @@ class PlzApp:
 
         assert command.task is not None
 
-        if command.list_env:
+        if command.show_env:
             self._print_env(cmd=command)
             return True
 
@@ -276,6 +278,11 @@ class PlzApp:
         prints the environment variable
         """
         ConsoleUtils.print_box(title=".env", rows=self._dotenv, sort=True)
+        if self._configured_envs:
+            ConsoleUtils.print_box(title="configured", rows=self._configured_envs, sort=True)
+        if cmd.task is not None:
+            task_envs = [[key, value] for key, value in cmd.task.task_env_vars.items()]
+            ConsoleUtils.print_box(title="task-definition", rows=task_envs, sort=True)
         ConsoleUtils.print_box(title="in-line", rows=cmd.env, sort=True)
         if all:
             env_vars = os.environ

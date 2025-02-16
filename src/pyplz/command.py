@@ -13,8 +13,8 @@ class Command:
     task_kwargs: dict[str, str] | None = None
     list: bool = False
     help: bool = False
-    list_env: bool = False
-    list_env_all: bool = False
+    show_env: bool = False
+    show_env_all: bool = False
     _env: List[str] | None = None
     _args: List[str] | None = None
 
@@ -22,7 +22,7 @@ class Command:
         return self.task is not None
 
     def is_default(self) -> bool:
-        has_any_utility_flag = self.list or self.help or self.list_env or self.list_env_all
+        has_any_utility_flag = self.list or self.help or self.show_env or self.show_env_all
         return not self.has_task_specified() and not has_any_utility_flag
 
     @property
@@ -91,8 +91,8 @@ class Parser:
             task=args.task,
             list=args.list,
             help=args.help,
-            list_env=args.list_env,
-            list_env_all=args.list_env_all,
+            show_env=args.list_env,
+            show_env_all=args.list_env_all,
             _env=args.env,
             _args=arguments,
         )

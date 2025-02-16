@@ -54,5 +54,5 @@ class TestPlzParser:
         assert cmd.task is None
         assert cmd.task_kwargs is None
         assert cmd.list is False
-        assert cmd.list_env is False
-        assert cmd.list_env_all is False
+        assert cmd.show_env is False
+        assert cmd.show_env_all is False

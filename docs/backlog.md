@@ -28,6 +28,7 @@
 - [ ] convert _ to - in task names
 - [ ] what's new (changelog) + versioning
 - [ ] testable examples in docs
+- [ ] --show-env and --show-env-all in task parser as well
 
 ### Could
 - [ ] heirachial loading

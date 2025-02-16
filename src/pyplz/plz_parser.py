@@ -12,9 +12,15 @@ class PlzParser:
         self.plz_app = plz_app
         self.task_parser = task_parser
         self.parser = argparse.ArgumentParser(description="plz - A python-first task runner.", add_help=True)
-        self.parser.add_argument("-l", "--list", action="store_true", help="List all available tasks")
-        self.parser.add_argument("-e", "--env", action="append", help="Inline environment variable (KEY=VALUE)")
-        self.parser.add_argument("task", nargs=argparse.REMAINDER, help="The task to run")
+        self.parser.add_argument("-l", "--list", action="store_true", help="List all available tasks.")
+        self.parser.add_argument(
+            "-e", "--env", action="append", help="Inline environment variable (KEY=VALUE). Can be used multiple times."
+        )
+        self.parser.add_argument("--show-env", action="store_true", help="Show all pyplz environment variables.")
+        self.parser.add_argument(
+            "--show-env-all", action="store_true", help="Show all available environment variables."
+        )
+        self.parser.add_argument("task", nargs=argparse.REMAINDER, help="The task to run.")
 
     def parse(self, args: list[str]) -> Command:
         parsed_args = self.parser.parse_args(args)
@@ -24,7 +30,12 @@ class PlzParser:
             cmd = self.parse_task(parsed_args.task)
             cmd._env = parsed_args.env
         else:
-            cmd = Command(list=parsed_args.list, _env=parsed_args.env)
+            cmd = Command(
+                list=parsed_args.list,
+                _env=parsed_args.env,
+                show_env=parsed_args.show_env,
+                show_env_all=parsed_args.show_env_all,
+            )
 
         return cmd
 

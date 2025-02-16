@@ -20,7 +20,7 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        cmd = Command("requires")
+        cmd = Command(plz._tasks["requires"])
         plz._main_execute(cmd)
 
         # Assert the order of calls
@@ -38,7 +38,7 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        cmd = Command("requires")
+        cmd = Command(plz._tasks["requires"])
         plz._main_execute(cmd)
 
         # Assert the order of calls
@@ -60,7 +60,7 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        cmd = Command("requires")
+        cmd = Command(plz._tasks["requires"])
         plz._main_execute(cmd)
 
         # Assert the order of calls
@@ -88,7 +88,7 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        cmd = Command("requires")
+        cmd = Command(plz._tasks["requires"])
         plz._main_execute(cmd)
 
         # Assert the order of calls
@@ -116,7 +116,7 @@ class TestPlzTaskRequires:
         def requires():
             mock_parent.requires()
 
-        cmd = Command("requires")
+        cmd = Command(plz._tasks["requires"])
         plz._main_execute(cmd)
 
         # Assert the order of calls
