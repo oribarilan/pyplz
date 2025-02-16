@@ -86,7 +86,7 @@ class TestEnv:
     def test_task_env_vars_loaded(self):
         impl_mock = Mock()
 
-        @plz.task(envs={"a": "1"})
+        @plz.task(env={"a": "1"})
         def sample_task():
             assert os.getenv("a") == "1"
             impl_mock()
@@ -97,9 +97,25 @@ class TestEnv:
     def test_task_env_vars_loaded_e2e(self):
         impl_mock = Mock()
 
-        @plz.task(envs={"a": "1"})
+        @plz.task(env={"a": "1"})
         def sample_task():
             assert os.getenv("a") == "1"
+            impl_mock()
+
+        sys.argv = ["plz", "sample_task"]
+        main()
+
+        impl_mock.assert_called_once()
+
+    def test_task_env_configured(self):
+        impl_mock = Mock()
+
+        plz.configure(env={"a": "1", "b": "2"})
+
+        @plz.task()
+        def sample_task():
+            assert os.getenv("a") == "1"
+            assert os.getenv("b") == "2"
             impl_mock()
 
         sys.argv = ["plz", "sample_task"]

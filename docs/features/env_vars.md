@@ -17,14 +17,29 @@ For more information, see the [Configuration](./configuration.md) documentation.
 
 These variables are `plz-level` as well.
 
+```python
+import os
+from pyplz import plz
+
+plz.configure(env={"a": "1", "b": "2"})
+
+@plz.task()
+def my_task():
+    print(os.environ["a"])
+```
+
+
 ## Task Definition
 
 You can define environment variables for a specific task by using the `envs` parameter in the task definition.
 
 ```python
+import os
+from pyplz import plz
+
 @plz.task(envs={"foo": "bar"})
 def my_task():
-    ...
+    print(os.environ["foo"])
 ```
 
 These variables will only be available to the task they are defined for (i.e., `task-level`).

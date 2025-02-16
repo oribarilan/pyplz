@@ -1,6 +1,8 @@
 from pyplz import plz
 
 
+plz.configure()
+
 @plz.task()
 def lint():
     """Lint code"""

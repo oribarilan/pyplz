@@ -5,7 +5,7 @@
 | env dotenv                 | v           | v      | v     |
 | env task definition        | v           | v      | v     |
 | env in-line                | v           | v      | v     |
-| env config                 |             |        |       |
+| env config                 | v           | v      | v     |
 | plz declare file path (-f) |             |        |       |
 | list                       | v           |        |       |
 | default                    | v           | v      |       |

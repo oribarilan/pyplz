@@ -15,7 +15,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from pyplz.command import Command, Parser
+from pyplz.command import Command
 from pyplz.console_utils import ConsoleUtils
 from pyplz.task import Task
 from pyplz.types import CallableWithArgs
@@ -32,14 +32,15 @@ class PlzApp:
         self._tasks = dict()
         self._user_configured = False
 
-    def _configure(self, parser: Parser):
-        self._parser = parser
-
-    def configure(self):
+    def configure(self, env: dict[str, str] | None = None):
         self._user_configured = True
         self._dotenv = self._load_env_dotenv()
         # plz loads the CWD to the sys.path to allow plzfile to import freely
         sys.path.append(os.path.join(os.getcwd()))
+
+        if env:
+            env_vars = [[k, v] for k, v in env.items()]
+            self._load_env_vars(env_vars)
 
     def list_tasks(self):
         """List all available tasks."""
@@ -118,16 +119,6 @@ class PlzApp:
 
         return False
 
-    def _try_execute_conditional_utility_commands(self, command: Command) -> bool:
-        if command.has_task_specified():
-            return False
-
-        if command.help:
-            self._print_help()
-            return True
-
-        return False
-
     def _get_default_task(self) -> Task | None:
         default_tasks = [t for t in self._tasks.values() if t.is_default]
 
@@ -159,10 +150,6 @@ class PlzApp:
 
         assert command.task is not None
 
-        if command.help:
-            command.task.print_help()
-            return True
-
         if command.list_env:
             self._print_env(cmd=command)
             return True
@@ -172,7 +159,10 @@ class PlzApp:
         return True
 
     def _load_env_cli(self, command: Command):
-        for k, v in command.env:
+        self._load_env_vars(command.env)
+
+    def _load_env_vars(self, env_vars: list[list[str]]):
+        for k, v in env_vars:
             os.environ[k] = v
 
     def _load_plzfile(self):
@@ -185,14 +175,9 @@ class PlzApp:
         if not self._user_configured:
             self.configure()
 
-        # self._load_plzfile()
-
         self._load_env_cli(command)
 
         if self._try_execute_utility_commands(command):
-            return
-
-        if self._try_execute_conditional_utility_commands(command):
             return
 
         if self._try_execute_default_task(command):
@@ -209,7 +194,7 @@ class PlzApp:
         desc: str | None = None,
         default: bool = False,
         requires: Callable | list[Callable | CallableWithArgs] | None = None,
-        envs: dict[str, Any] | None = None,
+        env: dict[str, Any] | None = None,
     ) -> Callable:
         """Defines a plz task that can be executed from the command line.
 
@@ -226,9 +211,10 @@ class PlzApp:
                 Defines the required tasks that will be executed before this task. Can be a single task (functions),
                 or a list of tasks (optionally with arguments). See examples below, or refrence the docs for more
                 information.
-            envs (dict[str, Any] | None, optional): _description_. Defaults to None. Defines task-level environment
+            env (dict[str, Any] | None, optional): _description_. Defaults to None. Defines task-level environment
                 variables that will be set before the task is executed.
         """
+
         def decorator(func) -> Callable:
             t_name: str = name or func.__name__
 
@@ -249,7 +235,7 @@ class PlzApp:
             required_tasks = [(self._tasks[r.__name__], args) for r, args in required_funcs]
 
             self._tasks[func.__name__] = Task(
-                func=func, name=t_name, desc=t_desc, is_default=default, requires=required_tasks, task_env_vars=envs
+                func=func, name=t_name, desc=t_desc, is_default=default, requires=required_tasks, task_env_vars=env
             )
 
             return func
@@ -284,16 +270,6 @@ class PlzApp:
         if msg is not None:
             PlzApp.print_error(msg)
         sys.exit(1)
-
-    def _print_help(self):
-        """Print the general help message."""
-        self._parser.parser.print_help()
-        self.print(r"Usage: [orange1]plz \[task] \[args][/]")
-        self.print("\nAvailable flags:")
-        self.print("  -h, --help    Show help for a specific task (or for plz if no task is provided)")
-        self.print("  -l, --list    List all available tasks")
-        self.print("\nAvailable tasks:")
-        self.list_tasks()
 
     def _print_env(self, cmd: Command, all: bool = False):
         """
