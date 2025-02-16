@@ -4,7 +4,7 @@
 
 ## .env file
 
-`pyplz` will automatically load environment variables from a `.env` file in the root of your project. 
+`pyplz` will automatically load environment variables from a `.env` file in the same level of your `plzfile`.
 Each line in the file should be in the format `KEY=VALUE`.
 
 These variables will be available to all tasks (i.e., `plz-level`).
@@ -19,7 +19,13 @@ These variables are `plz-level` as well.
 
 ## Task Definition
 
-You can define environment variables for a specific task by adding an `env` key to the task definition.
+You can define environment variables for a specific task by using the `envs` parameter in the task definition.
+
+```python
+@plz.task(envs={"foo": "bar"})
+def my_task():
+    ...
+```
 
 These variables will only be available to the task they are defined for (i.e., `task-level`).
 
@@ -35,8 +41,4 @@ For example:
 plz -e VERBOSE=true -e DEBUG=true build
 ```
 
-This can also be mixed with task arguments, for convenience:
-
-```bash
-plz build arg1 -e VERBOSE=true arg2
-```
+Note that in-line variables are defined before the task name, as can be seen in `plz -h`.
