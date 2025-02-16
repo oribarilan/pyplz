@@ -2,12 +2,10 @@ from __future__ import annotations
 
 import inspect
 import os
-import sys
+
 from typing import Any, Callable
 
 from rich.console import Console
-
-from pyplz.console_utils import ConsoleUtils
 
 
 console = Console()
@@ -43,7 +41,7 @@ class Task:
             task_env_vars = {}
         self.task_env_vars = task_env_vars
 
-    def __call__(self, *args) -> Any:
+    def __call__(self, *args, **kwargs) -> Any:
         """
         Call the task function and return the result.
         If the task function has any required functions, they will be called first (recursively).
@@ -53,27 +51,10 @@ class Task:
             os.environ[key] = value
 
         # Invoke required tasks first
-        for r_task, r_args in self.requires:
-            r_task(*r_args)
+        # for r_task, r_args in self.requires:
+        #     r_task(*r_args)
 
-        # Get the required positional arguments
-        sig = inspect.signature(self.func)
-        params = [
-            param
-            for param in sig.parameters.values()
-            if param.default == inspect.Parameter.empty
-            and param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
-        ]
-
-        # Check for missing arguments
-        if len(args) < len(params):
-            args_num = len(args)
-            missing_params = params[args_num:]
-            missing = ", ".join(p.name for p in missing_params)
-            console.print(f"[red]Missing arguments for task '{self.name}': {missing}[/]")
-            sys.exit(1)
-
-        ret = self.func(*args)
+        ret = self.func(*args, **kwargs)
         if ret is not None:
             console.print(ret)
 
@@ -88,37 +69,3 @@ class Task:
 
     def __repr__(self) -> str:
         return self.__str__()
-
-    def print_help(self):
-        """Print the documentation of the task, including parameters."""
-        sig = inspect.signature(self.func)
-
-        # Build parameters list with types, default values, and optionality
-        params = []
-        for param in sig.parameters.values():
-            param_type = f": {param.annotation.__name__}" if param.annotation != inspect.Parameter.empty else ""
-            if param.default is inspect.Parameter.empty:
-                params.append(f"[cyan]{param.name}{param_type}[/cyan]")
-            else:
-                default_value = f" = {param.default!r}"
-                params.append(f"[cyan]{param.name}{param_type}{default_value}[/cyan] [grey70](optional)[/grey70]")
-
-        # Build dependencies list
-        dependencies = [r_task.name for r_task, r_args in self.requires]
-
-        # Get the docstring
-        docstring = self.desc or "No description provided."
-
-        rows = []
-        if dependencies:
-            dependencies_line = ["Requires", ", ".join(dependencies)]
-            rows.append(dependencies_line)
-        parameters_line = ["Parameters", ", ".join(params)]
-        rows.append(parameters_line)
-        desc_line = ["Description", docstring.strip()]
-        rows.append(desc_line)
-
-        ConsoleUtils.print_box(self.name, rows, sort=False)
-
-        env_vars_values = [[k, v] for k, v in self.task_env_vars.items()]
-        ConsoleUtils.print_box("Task-defined Environment", env_vars_values)

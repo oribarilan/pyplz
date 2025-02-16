@@ -157,21 +157,18 @@ class PlzApp:
         if not command.has_task_specified():
             return False
 
-        if command.task not in self._tasks:
-            self.fail(f"Task '{command.task}' not found.")
-            return False
-
-        task = self._tasks[command.task]
+        assert command.task is not None
 
         if command.help:
-            task.print_help()
+            command.task.print_help()
             return True
 
         if command.list_env:
             self._print_env(cmd=command)
             return True
 
-        task(*command.args)
+        kwargs = command.task_kwargs or {}
+        command.task(**kwargs)
         return True
 
     def _load_env_cli(self, command: Command):
@@ -188,7 +185,7 @@ class PlzApp:
         if not self._user_configured:
             self.configure()
 
-        self._load_plzfile()
+        # self._load_plzfile()
 
         self._load_env_cli(command)
 
@@ -233,9 +230,7 @@ class PlzApp:
                 variables that will be set before the task is executed.
         """
         def decorator(func) -> Callable:
-            t_name = name
-            if name is None:
-                t_name = func.__name__
+            t_name: str = name or func.__name__
 
             t_desc = desc
             if desc is None:
@@ -262,8 +257,10 @@ class PlzApp:
         return decorator
 
     @staticmethod
-    def print_error(msg: str, silent: bool = False):
+    def print_error(msg: str, silent: bool = False, exit: bool = False):
         PlzApp.print(msg, "red", silent=silent)
+        if exit:
+            sys.exit(1)
 
     @staticmethod
     def print_warning(msg: str, silent: bool = False):

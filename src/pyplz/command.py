@@ -4,10 +4,13 @@ import argparse
 from dataclasses import dataclass
 from typing import List
 
+from pyplz.task import Task
+
 
 @dataclass
 class Command:
-    task: str | None = None
+    task: Task | None = None
+    task_kwargs: dict[str, str] | None = None
     list: bool = False
     help: bool = False
     list_env: bool = False
@@ -32,32 +35,32 @@ class Command:
 
 
 class Parser:
-    def __init__(
-        self,
-    ):
+    def __init__(self):
         self.parser = argparse.ArgumentParser(description="plz - A python-first task runner.", add_help=False)
-        self.parser.add_argument("task", nargs="?", help="The command to run")
-        self.parser.add_argument("-l", "--list", action="store_true", help="List all available tasks")
-        self.parser.add_argument(
-            "-h",
-            "--help",
-            action="store_true",
-            help="Show help for a specific task (or for plz if no task is provided)",
-        )
-        self.parser.add_argument(
-            "--list-env",
-            action="store_true",
-            help="List dedicated environment variables for the task (or for plz if no task is provided)",
-        )
-        self.parser.add_argument("--list-env-all", action="store_true", help="List all environment variables")
-        self.parser.add_argument(
-            "-e",
-            "--env",
-            action="append",
-            type=str,
-            help="Set an environment variable (can be used multiple times). Example: -e KEY=VALUE",
-        )
-        self.parser.add_argument("args", nargs=argparse.REMAINDER, help="Additional arguments for the task")
+        self.parser.add_argument("task", nargs="*", help="The command to run")
+        # self.parser.add_argument("-l", "--list", action="store_true", help="List all available tasks")
+        # self.parser.add_argument(
+        #     "-h",
+        #     "--help",
+        #     action="store_true",
+        #     help="Show help for a specific task (or for plz if no task is provided)",
+        # )
+        # self.parser.add_argument(
+        #     "--list-env",
+        #     action="store_true",
+        #     help="List dedicated environment variables for the task (or for plz if no task is provided)",
+        # )
+        # self.parser.add_argument("--list-env-all", action="store_true", help="List all environment variables")
+        # self.parser.add_argument(
+        #     "-e",
+        #     "--env",
+        #     action="append",
+        #     type=str,
+        #     help="Set an environment variable (can be used multiple times). Example: -e KEY=VALUE",
+        # )
+        # self.parser.add_argument("args", nargs=argparse.REMAINDER, help="Additional arguments for the task")
+
+        self.task_parser = argparse.ArgumentParser(add_help=False)
 
     def _split_env_vars_from_args(self, args: List[str]) -> tuple[List[str], List[str]]:
         env_vars = []

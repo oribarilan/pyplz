@@ -1,13 +1,22 @@
 import sys
 
-from pyplz.command import Parser
+from pyplz.error_handler import ErrorHandler
 from pyplz.plz_app import plz
+from pyplz.plz_parser import PlzParser
+from pyplz.task_parser import TaskParser
 
 
 def main():
-    parser = Parser()
-    command = parser.parse_args(sys.argv[1:])
+    with ErrorHandler() as h:
+        plz._load_plzfile()
+        parser = PlzParser(plz_app=plz, task_parser=TaskParser())
+        command = parser.parse(sys.argv[1:])
 
-    plz._configure(parser=parser)
+    if h.caught:
+        sys.exit(1)
 
     plz._main_execute(command)
+
+
+if __name__ == "__main__":
+    main()

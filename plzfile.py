@@ -39,3 +39,7 @@ def doc():
 def doc_serve():
     plz.run("mkdocs serve")
 
+
+@plz.task()
+def testing(hey: bool, some_int: int = 10):
+    plz.print(f"Hey: {hey}, Some int: {some_int}")

@@ -3,13 +3,14 @@ from __future__ import annotations
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import Mock
 
 from pyplz import plz
 from pyplz.command import Command
 from tests.conftest import TestUtils
 
 
-class TestPlzEnv:
+class TestEnv:
     @TestUtils.patch_method(plz._get_dotenv_path)
     def test_dotenv_loaded(self, get_dotenv_path_mock):
         dotenv_content = "KEY1=value1\nKEY2=value2\nKEY3=value3"
@@ -42,8 +43,12 @@ class TestPlzEnv:
         assert os.getenv("KEY3"), "value3"
 
     def test_task_env_vars_loaded(self):
+        impl_mock = Mock()
+
         @plz.task(envs={"a": "1"})
         def sample_task():
             assert os.getenv("a") == "1"
+            impl_mock()
 
-        plz._main_execute(Command("sample_task"))
+        plz._main_execute(Command(plz._tasks["sample_task"]))
+        impl_mock.assert_called_once()
