@@ -20,7 +20,7 @@ class PlzParser:
         self.parser.add_argument(
             "--show-env-all", action="store_true", help="Show all available environment variables."
         )
-        self.parser.add_argument("task", nargs=argparse.REMAINDER, help="The task to run.")
+        self.parser.add_argument("task", nargs=argparse.REMAINDER, help="The task to run. Use -l to list tasks.")
 
     def parse(self, args: list[str]) -> Command:
         parsed_args = self.parser.parse_args(args)

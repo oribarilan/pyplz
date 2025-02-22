@@ -36,8 +36,6 @@ class PlzApp:
     def configure(self, env: dict[str, str] | None = None):
         self._user_configured = True
         self._dotenv = self._load_env_dotenv()
-        # plz loads the CWD to the sys.path to allow plzfile to import freely
-        sys.path.append(os.path.join(os.getcwd()))
 
         if env:
             env_vars = [[k, v] for k, v in env.items()]
@@ -168,9 +166,19 @@ class PlzApp:
             os.environ[k] = v
 
     def _load_plzfile(self):
+        # wrapping with internal to make mocking possible in tests
+        # test_import for example would need to actually import
+        # while most other tests won't
+        self._internal_load_plzfile()
+
+    def _internal_load_plzfile(self):
         plzfile_path = os.path.join(os.getcwd(), "plzfile.py")
         spec = importlib.util.spec_from_file_location("plzfile", plzfile_path)
         plzfile = importlib.util.module_from_spec(spec)  # type: ignore
+
+        # plz loads the CWD to the sys.path to allow plzfile to import freely
+        sys.path.append(os.path.join(os.getcwd()))
+
         spec.loader.exec_module(plzfile)  # type: ignore
 
     def _main_execute(self, command: Command):

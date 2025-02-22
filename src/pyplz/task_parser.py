@@ -44,7 +44,7 @@ class TaskParser:
 
             kwargs = {}
             brackets_info = []
-            brackets_info.append(param_type.__name__)
+            brackets_info.append(str(param_type))
 
             # annotation is the type hint, can either be a type or a string
             # (in case of forward references using __future__)
