@@ -18,6 +18,13 @@ class TaskParser:
             return type(None) in get_args(param_type)
         return False
 
+    def _get_origin_type(self, param_type) -> str:
+        if get_origin(param_type) is not Union:
+            raise ValueError("Not a Union type")
+        inner_types = [t for t in get_args(param_type) if t is not type(None)]
+        # chain types together
+        return " | ".join([t.__name__ for t in inner_types])
+
     def _add_task_arguments(self, task: Task):
         """Dynamically add arguments to the task parser based on the task's signature."""
         sig = inspect.signature(task.func)
@@ -44,7 +51,12 @@ class TaskParser:
 
             kwargs = {}
             brackets_info = []
-            brackets_info.append(param_type.__name__)
+
+            if get_origin(param_type) is Union:
+                type_name = self._get_origin_type(param_type)
+            else:
+                type_name = param_type.__name__
+            brackets_info.append(type_name)
 
             # annotation is the type hint, can either be a type or a string
             # (in case of forward references using __future__)

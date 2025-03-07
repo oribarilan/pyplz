@@ -34,6 +34,6 @@ def sample_task():
         os.getcwd = lambda: str(tmp_path)
         plz._internal_load_plzfile()
 
-        sys.argv = ["plz", "sample_task"]
+        sys.argv = ["plz", "sample-task"]
 
         main()

@@ -42,7 +42,7 @@ class TestEnv:
             tmp.seek(0)
             get_dotenv_path_mock.return_value = Path(tmp.name)
 
-            sys.argv = ["plz", "sample_task"]
+            sys.argv = ["plz", "sample-task"]
 
             main()
 
@@ -77,7 +77,7 @@ class TestEnv:
             assert os.getenv("KEY3") == "value3"
             impl_mock()
 
-        sys.argv = ["plz", "-e", "KEY1=value1", "-e", "KEY2=value2", "-e", "KEY3=value3", "sample_task"]
+        sys.argv = ["plz", "-e", "KEY1=value1", "-e", "KEY2=value2", "-e", "KEY3=value3", "sample-task"]
 
         main()
 
@@ -91,7 +91,7 @@ class TestEnv:
             assert os.getenv("a") == "1"
             impl_mock()
 
-        plz._main_execute(Command(plz._tasks["sample_task"]))
+        plz._main_execute(Command(plz._tasks["sample-task"]))
         impl_mock.assert_called_once()
 
     def test_task_env_vars_loaded_e2e(self):
@@ -102,7 +102,7 @@ class TestEnv:
             assert os.getenv("a") == "1"
             impl_mock()
 
-        sys.argv = ["plz", "sample_task"]
+        sys.argv = ["plz", "sample-task"]
         main()
 
         impl_mock.assert_called_once()
@@ -118,7 +118,7 @@ class TestEnv:
             assert os.getenv("b") == "2"
             impl_mock()
 
-        sys.argv = ["plz", "sample_task"]
+        sys.argv = ["plz", "sample-task"]
         main()
 
         impl_mock.assert_called_once()

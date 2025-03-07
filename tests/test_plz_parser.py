@@ -17,9 +17,9 @@ class TestPlzParser:
         task_parser_mock.parse = Mock()
         parser = PlzParser(plz_app=plz, task_parser=task_parser_mock)
 
-        parser.parse(["sample_task", "--some-bool"])
+        parser.parse(["sample-task", "--some-bool"])
 
-        task_parser_mock.parse.assert_called_once_with(task=plz._tasks["sample_task"], args=["--some-bool"])
+        task_parser_mock.parse.assert_called_once_with(task=plz._tasks["sample-task"], args=["--some-bool"])
 
     def test_plz_parser_task_without_args_task_parser_called(self):
         @plz.task()
@@ -30,9 +30,9 @@ class TestPlzParser:
         task_parser_mock.parse = Mock()
         parser = PlzParser(plz_app=plz, task_parser=task_parser_mock)
 
-        parser.parse(["sample_task"])
+        parser.parse(["sample-task"])
 
-        task_parser_mock.parse.assert_called_once_with(task=plz._tasks["sample_task"], args=[])
+        task_parser_mock.parse.assert_called_once_with(task=plz._tasks["sample-task"], args=[])
 
     def test_plz_parser_nonexisting_task_error_raised(self):
         task_parser_mock = Mock()

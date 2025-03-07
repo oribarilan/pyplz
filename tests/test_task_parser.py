@@ -14,7 +14,7 @@ class TestTaskParser:
         def sample_task(some_bool: bool):
             pass
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         cmd = parser.parse(task=task, args=["--some-bool"])
@@ -27,7 +27,7 @@ class TestTaskParser:
         def sample_task(some_bool: bool = True):
             pass
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         cmd = parser.parse(task=task, args=["--some-bool"])
@@ -42,7 +42,7 @@ class TestTaskParser:
         def sample_task(some_bool: bool, some_int: int):
             impl_mock(some_bool=some_bool, some_int=some_int)
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         cmd = parser.parse(task=task, args=["--some-bool", "--some-int", "42"])
@@ -57,7 +57,7 @@ class TestTaskParser:
         def sample_task():
             impl_mock()
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         cmd = parser.parse(task=task, args=[])
@@ -70,7 +70,7 @@ class TestTaskParser:
         def sample_task(some_int: int):
             pass
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         with pytest.raises(SystemExit) as exc_info:
@@ -87,7 +87,7 @@ class TestTaskParser:
         def sample_task(some_int: int = 10):
             pass
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         cmd = parser.parse(task=task, args=[])
@@ -100,7 +100,7 @@ class TestTaskParser:
         def sample_task(some_int: Optional[int]):
             pass
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         cmd = parser.parse(task=task, args=[])
@@ -113,7 +113,7 @@ class TestTaskParser:
         def sample_task(some_int: "int"):
             pass
 
-        task = plz._tasks["sample_task"]
+        task = plz._tasks["sample-task"]
         parser = TaskParser()
 
         with pytest.raises(ForwardRefrenceNotSupported):

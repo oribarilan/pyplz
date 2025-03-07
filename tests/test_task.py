@@ -1,4 +1,3 @@
-import pytest
 from pyplz.task import Task
 
 

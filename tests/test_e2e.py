@@ -1,6 +1,8 @@
 import sys
 from unittest.mock import Mock
 
+import pytest
+
 from pyplz import plz
 from pyplz.main import main
 
@@ -13,7 +15,7 @@ class TestMain:
         def sample_task():
             impl_mock()
 
-        sys.argv = ["plz", "sample_task"]
+        sys.argv = ["plz", "sample-task"]
 
         main()
 
@@ -28,7 +30,8 @@ class TestMain:
 
         sys.argv = ["plz", "nonexisting_task"]
 
-        main()
+        with pytest.raises(SystemExit):
+            main()
 
     def test_main_task_with_missing_argument(self):
         impl_mock = Mock()
@@ -37,7 +40,7 @@ class TestMain:
         def sample_task(some_bool: bool, some_int: int):
             impl_mock()
 
-        sys.argv = ["plz", "sample_task", "--some-bool"]
+        sys.argv = ["plz", "sample-task", "--some-bool"]
 
-        main()
-        # impl_mock.assert_called_once_with(some_bool=True)
+        with pytest.raises(SystemExit):
+            main()

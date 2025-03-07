@@ -42,7 +42,7 @@ class TestPlzTask:
         def sample_task():
             mock_func()
 
-        cmd = Command(plz._tasks["sample_task"])
+        cmd = Command(plz._tasks["sample-task"])
         plz._main_execute(cmd)
 
         mock_func.assert_called_once()
@@ -54,7 +54,7 @@ class TestPlzTask:
         def sample_task(arg1, arg2):
             mock_func(arg1, arg2)
 
-        cmd = Command(plz._tasks["sample_task"], task_kwargs={"arg1": "arg1_value", "arg2": "arg2_value"})
+        cmd = Command(plz._tasks["sample-task"], task_kwargs={"arg1": "arg1_value", "arg2": "arg2_value"})
         plz._main_execute(cmd)
 
         mock_func.assert_called_once_with("arg1_value", "arg2_value")
@@ -66,7 +66,7 @@ class TestPlzTask:
         def sample_task(arg1="default1", arg2="default2"):
             mock_func(arg1, arg2)
 
-        cmd = Command(plz._tasks["sample_task"])
+        cmd = Command(plz._tasks["sample-task"])
         plz._main_execute(cmd)
 
         mock_func.assert_called_once_with("default1", "default2")
@@ -76,7 +76,7 @@ class TestPlzTask:
         def sample_task():
             return "Task executed"
 
-        cmd = Command(plz._tasks["sample_task"])
+        cmd = Command(plz._tasks["sample-task"])
         plz._main_execute(cmd)
 
         captured = capfd.readouterr()
