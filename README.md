@@ -42,5 +42,47 @@ faster and more reliable. It ensures consistent execution and simplifies collabo
 !!! tip "Development Dependencies"
     For best practice, include development dependencies (e.g., `pytest`) in a dedicated file (such as `requirements.dev.txt`). Add `pyplz` to your dev dependencies to ensure it's available out of the box for every project contributor.
 
+### Quick Start
 
-### Example
+Create your first task by making a `plzfile.py` in your project root:
+
+```python
+from pyplz import plz
+
+@plz.task()
+def test():
+    """Test the project."""
+    plz.run("pytest")
+```
+
+To add options for test unit tests only (e.g., without integration tests), or adding test coverage, update your task as follows:
+
+```python
+from pyplz import plz
+
+@plz.task()
+def test(unit_only: bool = False, coverage: bool = False):
+    """Test the project."""
+    marks = "-m unit" if unit_only else ""
+    cov = "--cov" if coverage else ""
+    plz.run(f"pytest {marks} {cov}")
+```
+
+You can view task-specific help with:
+```bash
+❯ plz test -h
+usage: plz [-h] [--unit-only] [--coverage]
+
+Test the project.
+
+system options:
+  -h, --help   Show this help message and exit.
+
+optional arguments:
+  --unit-only  Set unit_only to True (bool, default: false)
+  --coverage   Set coverage to True (bool, default: false)
+```
+
+Now, your `test` task can continue to evolve, without needing some special documentation in a separate file, or a slack message to update your team members!
+
+Read through our documentation to learn how you can use environment variables, define task dependencies and much more!

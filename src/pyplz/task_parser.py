@@ -44,12 +44,11 @@ class TaskParser:
 
             kwargs = {}
             brackets_info = []
-            brackets_info.append(str(param_type))
+            brackets_info.append(param_type.__name__)
 
             # annotation is the type hint, can either be a type or a string
             # (in case of forward references using __future__)
             if param.annotation is bool:
-                help = f"Set {name} to true"
                 # bool is a special case, as it's always optional
                 is_required = False
                 if has_default and param.default is True:
@@ -60,6 +59,7 @@ class TaskParser:
                     brackets_info.append("default: false")
                     default = False
                     action = "store_true"
+                help = f"Set {name} to {not default}"
                 kwargs["default"] = default
             else:
                 help = f"Set {name} to the provided value"

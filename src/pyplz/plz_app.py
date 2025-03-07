@@ -227,6 +227,8 @@ class PlzApp:
 
         def decorator(func) -> Callable:
             t_name: str = name or func.__name__
+            # Replace underscores with hyphens to use kebab-case
+            t_name = t_name.replace("_", "-")
 
             t_desc = desc
             if desc is None:
@@ -244,7 +246,7 @@ class PlzApp:
                 required_funcs = [(_required, ())]
             required_tasks = [(self._tasks[r.__name__], args) for r, args in required_funcs]
 
-            self._tasks[func.__name__] = Task(
+            self._tasks[t_name] = Task(
                 func=func, name=t_name, desc=t_desc, is_default=default, requires=required_tasks, task_env_vars=env
             )
 

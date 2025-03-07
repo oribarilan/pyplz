@@ -45,6 +45,9 @@ class PlzParser:
 
     def parse_task(self, task_with_args: list[str]) -> Command:
         task_name = task_with_args[0]
+        if "_" in task_name:
+            # allowing user to input snake_case instead of kebab-case
+            task_name = task_name.replace("_", "-")
         if task_name not in self.plz_app._tasks:
             raise TaskNotFoundError(task_name=task_name)
         if len(task_with_args) > 1:
