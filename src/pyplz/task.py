@@ -51,8 +51,8 @@ class Task:
             os.environ[key] = value
 
         # Invoke required tasks first
-        # for r_task, r_args in self.requires:
-        #     r_task(*r_args)
+        for r_task, r_args in self.requires:
+            r_task(*r_args)
 
         ret = self.func(*args, **kwargs)
         if ret is not None:
