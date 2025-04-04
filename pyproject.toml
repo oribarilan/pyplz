@@ -20,7 +20,7 @@ name = "pyplz"
 version = "0.12.1"
 description = "A Python-first command runner"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
     "rich>=13.9.4,<14",
     "python-dotenv>=1.0.1,<2"
